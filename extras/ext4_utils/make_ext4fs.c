@@ -186,12 +186,14 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		} else {
 			dentries[i].mtime = fixed_time;
 		}
-		uint64_t capabilities;
+		dentries[i].capabilities = 0;
+
 		if (fs_config_func != NULL) {
 #ifdef ANDROID
-			unsigned int mode = 0;
+			unsigned int mode = dentries[i].mode;
 			unsigned int uid = 0;
 			unsigned int gid = 0;
+			uint64_t capabilities = 0;
 			int dir = S_ISDIR(stat.st_mode);
 			fs_config_func(dentries[i].path, dir, &uid, &gid, &mode, &capabilities);
 			dentries[i].mode = mode;
