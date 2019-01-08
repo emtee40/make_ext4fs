@@ -1,7 +1,14 @@
+#include <stdlib.h>
+
+#ifdef USE_MINGW
+
+char *selinux_mnt = NULL;
+
+#else
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -121,3 +128,5 @@ static void fini_lib(void)
 {
 	fini_selinuxmnt();
 }
+
+#endif /* USE_MINGW */

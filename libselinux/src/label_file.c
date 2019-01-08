@@ -18,6 +18,11 @@
 #include "callbacks.h"
 #include "label_internal.h"
 
+#ifdef USE_MINGW
+#define	S_IFLNK		(S_IFREG | S_IFCHR)
+#define	S_IFSOCK	(S_IFREG | S_IFDIR)
+#endif
+
 /*
  * Internals, mostly moved over from matchpathcon.c
  */

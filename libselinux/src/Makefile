@@ -1,16 +1,15 @@
 COLIB = ../../core
+OBJS = callbacks.o check_context.o \
+	freecon.o init.o label.o label_file.o label_android_property.o
 
-AR = ar rcs
-OBJS = $(patsubst %.c,%.o,$(wildcard *.c))
+all: libselinux.a
 
-all:libselinux.a
+libselinux.a: $(OBJS)
+	$(AR) $(ARFLAGS) libselinux.a *.o
 
-libselinux.a:
-	gcc -DHOST -I../include -I$(COLIB)/include -c callbacks.c check_context.c \
-	freecon.c init.c label.c label_file.c label_android_property.c;
-	$(AR) libselinux.a *.o
-	
+.c.o:
+	$(CC) $(CFLAGS) -I../include -I$(COLIB)/include -o $@ $<
+
 clean:
 	rm -f $(OBJS)
 	rm -f libselinux.a
-

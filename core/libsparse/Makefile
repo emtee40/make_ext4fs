@@ -1,21 +1,20 @@
 ZLLIB = ../../zlib/src
-AR = ar rcs
 OBJS = $(patsubst %.c,%.o,$(wildcard *.c))
 
-all:libsparse.a simg2img
+all: libsparse.a simg2img img2simg
 
 libsparse.a:
-	gcc -Iinclude -c backed_block.c output_file.c sparse.c sparse_crc32.c sparse_err.c sparse_read.c;
-	$(AR) libsparse.a *.o
-	
+	$(CC) $(CFLAGS) -Iinclude -c backed_block.c output_file.c sparse.c sparse_crc32.c sparse_err.c sparse_read.c
+	$(AR) $(ARFLAGS) libsparse.a *.o
+
 simg2img:
-	gcc -Iinclude -I$(ZLLIB) -o simg2img simg2img.c sparse_crc32.c libsparse.a $(ZLLIB)/libz.a
-	
+	$(LD) $(CFLAGS) $(LDFLAGS) -Iinclude -I$(ZLLIB) -o simg2img simg2img.c sparse_crc32.c libsparse.a $(ZLLIB)/libz.a
+
 img2simg:
-	gcc -Iinclude -I$(ZLLIB) -o img2simg img2simg.c sparse_crc32.c libsparse.a $(ZLLIB)/libz.a
-	
+	$(LD) $(CFLAGS) $(LDFLAGS) -Iinclude -I$(ZLLIB) -o img2simg img2simg.c sparse_crc32.c libsparse.a $(ZLLIB)/libz.a
+
 clean:
 	rm -f $(OBJS)
 	rm -f libsparse.a
-	rm -f simg2img
+	rm -f simg2img img2simg
 
