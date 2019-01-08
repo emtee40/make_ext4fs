@@ -86,7 +86,7 @@ void canned_fs_config(const char* path, int dir,
 	key.path = path + strspn (path, "/");   // canned paths lack the leading '/'
 	Path* p = (Path*) bsearch(&key, canned_data, canned_used, sizeof(Path), path_compare);
 	if (p == NULL) {
-		fprintf(stderr, "[%s] not found in canned fs_config, using defaults\n", path);
+		fprintf(stderr, "[%s] not found in canned fs_config, using defaults\n", key.path);
 		fs_config(path, dir, uid, gid, mode, capabilities);
 	} else {
 		if (p->uid != (unsigned)-1)
