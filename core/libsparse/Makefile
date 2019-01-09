@@ -3,7 +3,7 @@ OBJS = backed_block.o output_file.o simg2simg.o sparse.o sparse_err.o sparse_rea
 SIMG2IMG_OBJS = simg2img.o
 IMG2SIMG_OBJS = img2simg.o
 
-all: libsparse.a simg2img img2simg
+all: libsparse.a simg2img$E img2simg$E
 
 libsparse.a: $(OBJS)
 	$(AR) $(ARFLAGS) libsparse.a *.o
@@ -11,14 +11,13 @@ libsparse.a: $(OBJS)
 .c.o:
 	$(CC) $(CFLAGS) -Iinclude -I$(ZLLIB) -c $< -o $@
 
-simg2img: $(SIMG2IMG_OBJS) libsparse.a
-	$(LD) $(LDFLAGS) -o simg2img $^ $(ZLLIB)/libz.a
+simg2img$E: $(SIMG2IMG_OBJS) libsparse.a
+	$(LD) $(LDFLAGS) -o $@ $^ $(ZLLIB)/libz.a
 
-img2simg: $(IMG2SIMG_OBJS) libsparse.a
-	$(LD) $(LDFLAGS) -o img2simg $^ $(ZLLIB)/libz.a
+img2simg$E: $(IMG2SIMG_OBJS) libsparse.a
+	$(LD) $(LDFLAGS) -o $@ $^ $(ZLLIB)/libz.a
 
 clean:
 	rm -f $(OBJS) $(SIMG2IMG_OBJS) $(IMG2SIMG_OBJS)
 	rm -f libsparse.a
-	rm -f simg2img img2simg
-
+	rm -f simg2img$E img2simg$E

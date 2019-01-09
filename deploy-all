@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+rm -rf deploy
+
+make clean TARGET=linux
+make clean TARGET=windows
+
+make deploy DIET=1 STATIC=0 DEBUG=0 TARGET=linux
+make clean TARGET=linux
+
+make deploy DIET=0 STATIC=0 DEBUG=0 TARGET=windows
+make clean TARGET=windows
