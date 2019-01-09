@@ -38,6 +38,10 @@
 #ifdef USE_MINGW
 
 #include <winsock2.h>
+#include "scandir_win32.h"
+
+/* no symlinks in Windows */
+#define lstat stat
 
 /* These match the Linux definitions of these flags.
    L_xx is defined to avoid conflicting with the win32 versions.
@@ -55,10 +59,10 @@
 #define S_IWOTH 00002
 #define S_IXOTH 00001
 #define S_IRWXO (S_IROTH | S_IWOTH | S_IXOTH)
+#endif
 #define S_ISUID 0004000
 #define S_ISGID 0002000
 #define S_ISVTX 0001000
-#endif
 
 #else
 
@@ -119,7 +123,6 @@ static u32 build_default_directory_structure(const char *dir_path,
 	return root_inode;
 }
 
-#ifndef USE_MINGW
 /* Read a local directory and create the same tree in the generated filesystem.
    Calls itself recursively with each directory in the given directory.
    full_path is an absolute or relative path, with a trailing slash, to the
@@ -134,7 +137,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 	int entries = 0;
 	struct dentry *dentries;
 	struct dirent **namelist = NULL;
-	struct stat stat;
+	struct stat st;
 	int ret;
 	int i;
 	u32 inode;
@@ -160,7 +163,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 	}
 
 	dentries = calloc(entries, sizeof(struct dentry));
-	if (dentries == NULL)
+	if (dentries == NULL && entries)
 		critical_error_errno("malloc");
 
 	for (i = 0; i < entries; i++) {
@@ -173,7 +176,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 
 		free(namelist[i]);
 
-		ret = lstat(dentries[i].full_path, &stat);
+		ret = lstat(dentries[i].full_path, &st);
 		if (ret < 0) {
 			error_errno("lstat");
 			i--;
@@ -181,10 +184,10 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 			continue;
 		}
 
-		dentries[i].size = stat.st_size;
-		dentries[i].mode = stat.st_mode & (S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO);
+		dentries[i].size = st.st_size;
+		dentries[i].mode = st.st_mode & (S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO);
 		if (fixed_time == -1) {
-			dentries[i].mtime = stat.st_mtime;
+			dentries[i].mtime = st.st_mtime;
 		} else {
 			dentries[i].mtime = fixed_time;
 		}
@@ -196,7 +199,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 			unsigned int uid = 0;
 			unsigned int gid = 0;
 			uint64_t capabilities = 0;
-			int dir = S_ISDIR(stat.st_mode);
+			int dir = S_ISDIR(st.st_mode);
 			fs_config_func(dentries[i].path, dir, &uid, &gid, &mode, &capabilities);
 			dentries[i].mode = mode;
 			dentries[i].uid = uid;
@@ -208,7 +211,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		}
 #ifndef USE_MINGW
 		if (sehnd) {
-			if (selabel_lookup(sehnd, &dentries[i].secon, dentries[i].path, stat.st_mode) < 0) {
+			if (selabel_lookup(sehnd, &dentries[i].secon, dentries[i].path, st.st_mode) < 0) {
 				error("cannot lookup security context for %s", dentries[i].path);
 			}
 
@@ -217,23 +220,27 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		}
 #endif
 
-		if (S_ISREG(stat.st_mode)) {
+		if (S_ISREG(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_REG_FILE;
-		} else if (S_ISDIR(stat.st_mode)) {
+		} else if (S_ISDIR(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_DIR;
 			dirs++;
-		} else if (S_ISCHR(stat.st_mode)) {
+		} else if (S_ISCHR(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_CHRDEV;
-		} else if (S_ISBLK(stat.st_mode)) {
+		} else if (S_ISBLK(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_BLKDEV;
-		} else if (S_ISFIFO(stat.st_mode)) {
+		} else if (S_ISFIFO(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_FIFO;
-		} else if (S_ISSOCK(stat.st_mode)) {
+#ifdef S_ISSOCK
+		} else if (S_ISSOCK(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_SOCK;
-		} else if (S_ISLNK(stat.st_mode)) {
+#endif
+#ifdef S_ISLNK
+		} else if (S_ISLNK(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_SYMLINK;
 			dentries[i].link = calloc(info.block_size, 1);
 			readlink(dentries[i].full_path, dentries[i].link, info.block_size - 1);
+#endif
 		} else {
 			error("unknown file type on %s", dentries[i].path);
 			i--;
@@ -257,10 +264,12 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		dentries[0].file_type = EXT4_FT_DIR;
 		dentries[0].uid = 0;
 		dentries[0].gid = 0;
+#ifndef USE_MINGW
 		if (sehnd) {
 			if (selabel_lookup(sehnd, &dentries[0].secon, dentries[0].path, dentries[0].mode) < 0)
 				error("cannot lookup security context for %s", dentries[0].path);
 		}
+#endif
 		entries++;
 		dirs++;
 	}
@@ -320,10 +329,10 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		free(dentries[i].secon);
 	}
 
-	free(dentries);
+	if (dentries)
+		free(dentries);
 	return inode;
 }
-#endif
 
 static u32 compute_block_size()
 {
@@ -591,17 +600,11 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	if (info.feat_compat & EXT4_FEATURE_COMPAT_RESIZE_INODE)
 		ext4_create_resize_inode();
 
-#ifdef USE_MINGW
-	// Windows needs only 'create an empty fs image' functionality
-	assert(!directory);
-	root_inode_num = build_default_directory_structure(mountpoint, sehnd);
-#else
 	if (directory)
 		root_inode_num = build_directory_structure(directory, mountpoint, 0,
 			fs_config_func, sehnd, verbose, fixed_time);
 	else
 		root_inode_num = build_default_directory_structure(mountpoint, sehnd);
-#endif
 
 	root_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 	inode_set_permissions(root_inode_num, root_mode, 0, 0, 0);

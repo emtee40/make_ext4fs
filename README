@@ -17,6 +17,13 @@ The behaviour of make_ext4fs has been modified in the following ways:
    the uid, gid and mode are computed using the default rules
    (same like fs_config is not specified).
 
+ * The Windows version of make_ext4fs now can scan directories, same way as
+   it does in Unix. MinGW will report mode 0666 for files and 0777 for
+   directories; this is not very useful, so better set file modes in fs_config.
+
+   However, this is useful to see if you ommited any files from fs_config,
+   due to previous modification.
+
  * If during image creation it turns out that one of the source files
    cannot be open, the tool will:
 

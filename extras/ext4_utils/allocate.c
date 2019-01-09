@@ -178,7 +178,7 @@ static void allocate_bg_inode_table(struct block_group_info *bg)
 		block += aux_info.bg_desc_blocks + info.bg_desc_reserve_blocks + 1;
 
 	bg->inode_table = calloc(aux_info.inode_table_blocks, info.block_size);
-	if (bg->inode_table == NULL)
+	if (bg->inode_table == NULL && aux_info.inode_table_blocks)
 		critical_error_errno("calloc");
 
 	sparse_file_add_data(ext4_sparse_file, bg->inode_table,
@@ -323,7 +323,7 @@ void block_allocator_init()
 	unsigned int i;
 
 	aux_info.bgs = calloc(sizeof(struct block_group_info), aux_info.groups);
-	if (aux_info.bgs == NULL)
+	if (aux_info.bgs == NULL && aux_info.groups)
 		critical_error_errno("calloc");
 
 	for (i = 0; i < aux_info.groups; i++)

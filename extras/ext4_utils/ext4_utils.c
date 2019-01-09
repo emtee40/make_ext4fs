@@ -165,12 +165,11 @@ void ext4_create_fs_aux_info()
 	aux_info.sb = calloc(info.block_size, 1);
 	/* Alloc an array to hold the pointers to the backup superblocks */
 	aux_info.backup_sb = calloc(aux_info.groups, sizeof(char *));
-
-	if (!aux_info.sb)
+	if (!aux_info.sb && aux_info.groups)
 		critical_error_errno("calloc");
 
 	aux_info.bg_desc = calloc(info.block_size, aux_info.bg_desc_blocks);
-	if (!aux_info.bg_desc)
+	if (!aux_info.bg_desc && aux_info.bg_desc_blocks)
 		critical_error_errno("calloc");
 	aux_info.xattrs = NULL;
 }

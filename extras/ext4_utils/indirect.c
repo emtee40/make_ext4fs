@@ -32,7 +32,7 @@ static u8 *create_backing(struct block_allocation *alloc,
 		critical_error("indirect backing larger than %d blocks", EXT4_NDIR_BLOCKS);
 
 	u8 *data = calloc(backing_len, 1);
-	if (!data)
+	if (!data && backing_len)
 		critical_error_errno("calloc");
 
 	u8 *ptr = data;
@@ -448,7 +448,7 @@ void inode_attach_resize(struct ext4_inode *inode,
 			dind_block);
 
 	u32 *ind_block_data = calloc(info.block_size, info.bg_desc_reserve_blocks);
-	if (!ind_block_data)
+	if (!ind_block_data && info.bg_desc_reserve_blocks)
 		critical_error_errno("calloc");
 	sparse_file_add_data(ext4_sparse_file, ind_block_data,
 			info.block_size * info.bg_desc_reserve_blocks,

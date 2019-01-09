@@ -38,6 +38,10 @@
 #include <sys/mman.h>
 #define O_BINARY 0
 #else
+#ifdef __MINGW64__
+/* for some reason, ftruncate is a NOP on mingw64 */
+#undef ftruncate
+#endif
 #define ftruncate64 ftruncate
 #endif
 
@@ -47,6 +51,7 @@
 #define mmap64 mmap
 #define off64_t off_t
 #endif
+
 #if defined(__dietlibc__)
 #define ftruncate64 ftruncate
 #define mmap64 mmap
