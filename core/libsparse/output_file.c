@@ -754,6 +754,7 @@ int write_file_chunk(struct output_file *out, unsigned int len,
 
 	int file_fd = open(file, O_RDONLY | O_BINARY);
 	if (file_fd < 0) {
+#ifndef USE_MINGW
 		if (errno == EACCES) {
 			/* This can happen for files with mode == 000, for example */
 			struct stat st;
@@ -764,6 +765,7 @@ int write_file_chunk(struct output_file *out, unsigned int len,
 				chmod (file, st.st_mode);
 			}
 		}
+#endif
 		if (file_fd < 0) {
 			/* hackish (since this is a library), but will do,
 			   otherwise would confuse users a lot */
