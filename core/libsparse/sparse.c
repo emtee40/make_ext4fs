@@ -101,26 +101,28 @@ unsigned int sparse_count_chunks(struct sparse_file *s)
 	return chunks;
 }
 
-static void sparse_file_write_block(struct output_file *out,
+static int sparse_file_write_block(struct output_file *out,
 		struct backed_block *bb)
 {
+	int rc = -EINVAL;
 	switch (backed_block_type(bb)) {
 	case BACKED_BLOCK_DATA:
-		write_data_chunk(out, backed_block_len(bb), backed_block_data(bb));
+		rc = write_data_chunk(out, backed_block_len(bb), backed_block_data(bb));
 		break;
 	case BACKED_BLOCK_FILE:
-		write_file_chunk(out, backed_block_len(bb),
+		rc = write_file_chunk(out, backed_block_len(bb),
 				backed_block_filename(bb), backed_block_file_offset(bb));
 		break;
 	case BACKED_BLOCK_FD:
-		write_fd_chunk(out, backed_block_len(bb),
+		rc = write_fd_chunk(out, backed_block_len(bb),
 				backed_block_fd(bb), backed_block_file_offset(bb));
 		break;
 	case BACKED_BLOCK_FILL:
-		write_fill_chunk(out, backed_block_len(bb),
+		rc = write_fill_chunk(out, backed_block_len(bb),
 				backed_block_fill_val(bb));
 		break;
 	}
+	return rc;
 }
 
 static int write_all_blocks(struct sparse_file *s, struct output_file *out)
@@ -128,14 +130,19 @@ static int write_all_blocks(struct sparse_file *s, struct output_file *out)
 	struct backed_block *bb;
 	unsigned int last_block = 0;
 	int64_t pad;
+	int rc;
 
 	for (bb = backed_block_iter_new(s->backed_block_list); bb;
 			bb = backed_block_iter_next(bb)) {
 		if (backed_block_block(bb) > last_block) {
 			unsigned int blocks = backed_block_block(bb) - last_block;
-			write_skip_chunk(out, (int64_t)blocks * s->block_size);
+			rc = write_skip_chunk(out, (int64_t)blocks * s->block_size);
+			if (rc < 0)
+				return rc;
 		}
-		sparse_file_write_block(out, bb);
+		rc = sparse_file_write_block(out, bb);
+		if (rc < 0)
+			return rc;
 		last_block = backed_block_block(bb) +
 				DIV_ROUND_UP(backed_block_len(bb), s->block_size);
 	}
@@ -143,7 +150,9 @@ static int write_all_blocks(struct sparse_file *s, struct output_file *out)
 	pad = s->len - (int64_t)last_block * s->block_size;
 	assert(pad >= 0);
 	if (pad > 0) {
-		write_skip_chunk(out, pad);
+		rc = write_skip_chunk(out, pad);
+		if (rc < 0)
+			return rc;
 	}
 
 	return 0;
@@ -230,6 +239,7 @@ static struct backed_block *move_chunks_up_to_len(struct sparse_file *from,
 	struct backed_block *bb;
 	struct backed_block *start;
 	int64_t file_len = 0;
+	int rc;
 
 	/*
 	 * overhead is sparse file header, initial skip chunk, split chunk, end
@@ -249,7 +259,9 @@ static struct backed_block *move_chunks_up_to_len(struct sparse_file *from,
 	for (bb = start; bb; bb = backed_block_iter_next(bb)) {
 		count = 0;
 		/* will call out_counter_write to update count */
-		sparse_file_write_block(out_counter, bb);
+		rc = sparse_file_write_block(out_counter, bb);
+		if (rc < 0)
+			return NULL;
 		if (file_len + count > len) {
 			/*
 			 * If the remaining available size is more than 1/8th of the

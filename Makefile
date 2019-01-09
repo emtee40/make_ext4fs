@@ -1,7 +1,7 @@
 # Build configuration
 STATIC = 0
 DEBUG = 0
-DIET = 1
+DIET = 0
 #TARGET = windows
 
 CC = $(PREFIX)gcc -c

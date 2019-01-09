@@ -6,16 +6,16 @@ IMG2SIMG_OBJS = img2simg.o
 all: libsparse.a simg2img$E img2simg$E
 
 libsparse.a: $(OBJS)
-	$(AR) $(ARFLAGS) libsparse.a *.o
+	$(AR) $(ARFLAGS) $@ $^
 
-.c.o:
+%.o: %.c
 	$(CC) $(CFLAGS) -Iinclude -I$(ZLLIB) -c $< -o $@
 
-simg2img$E: $(SIMG2IMG_OBJS) libsparse.a
-	$(LD) $(LDFLAGS) -o $@ $^ $(ZLLIB)/libz.a
+simg2img$E: $(SIMG2IMG_OBJS) libsparse.a $(ZLLIB)/libz.a
+	$(LD) $(LDFLAGS) -o $@ $^
 
-img2simg$E: $(IMG2SIMG_OBJS) libsparse.a
-	$(LD) $(LDFLAGS) -o $@ $^ $(ZLLIB)/libz.a
+img2simg$E: $(IMG2SIMG_OBJS) libsparse.a $(ZLLIB)/libz.a
+	$(LD) $(LDFLAGS) -o $@ $^
 
 clean:
 	rm -f $(OBJS) $(SIMG2IMG_OBJS) $(IMG2SIMG_OBJS)

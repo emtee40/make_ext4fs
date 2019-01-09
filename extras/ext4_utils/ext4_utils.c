@@ -128,9 +128,9 @@ void write_sb(int fd, unsigned long long offset, struct ext4_super_block *sb)
 }
 
 /* Write the filesystem image to a file */
-void write_ext4_image(int fd, int gz, int sparse, int crc)
+int write_ext4_image(int fd, int gz, int sparse, int crc)
 {
-	sparse_file_write(ext4_sparse_file, fd, gz, sparse, crc);
+	return sparse_file_write(ext4_sparse_file, fd, gz, sparse, crc);
 }
 
 /* Compute the rest of the parameters of the filesystem from the basic info */

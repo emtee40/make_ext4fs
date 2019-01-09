@@ -5,9 +5,9 @@ OBJS = callbacks.o check_context.o \
 all: libselinux.a
 
 libselinux.a: $(OBJS)
-	$(AR) $(ARFLAGS) libselinux.a *.o
+	$(AR) $(ARFLAGS) $@ $^
 
-.c.o:
+%.o: %.c
 	$(CC) $(CFLAGS) -I../include -I$(COLIB)/include -o $@ $<
 
 clean:

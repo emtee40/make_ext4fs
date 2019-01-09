@@ -8,11 +8,10 @@ MKE4FS_OBJS = make_ext4fs_main.o make_ext4fs.o
 
 all: make_ext4fs$E
 
-make_ext4fs$E: $(MKE4FS_OBJS) $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $^ \
-	$(SELIB)/src/libselinux.a $(SPLIB)/libsparse.a $(ZLLIB)/libz.a $(LIBS)
+make_ext4fs$E: $(MKE4FS_OBJS) $(OBJS) $(SELIB)/src/libselinux.a $(SPLIB)/libsparse.a $(ZLLIB)/libz.a
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-.c.o:
+%.o: %.c
 	$(CC) $(CFLAGS) -I$(SELIB)/include -I$(SPLIB)/include -I$(COLIB)/include -o $@ $<
 
 clean:

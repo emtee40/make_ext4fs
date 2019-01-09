@@ -1,11 +1,14 @@
-OBJS = $(patsubst %.c,%.o,$(wildcard *.c))
+OBJS = adler32.o compress.o crc32.o deflate.o gzclose.o \
+	gzlib.o gzread.o gzwrite.o infback.o inflate.o \
+	inftrees.o inffast.o trees.o uncompr.o zutil.o
 
 all: libz.a
 
-libz.a:
-	$(CC) $(CFLAGS) -I.. adler32.c compress.c crc32.c deflate.c gzclose.c \
-	gzlib.c gzread.c gzwrite.c infback.c inflate.c inftrees.c inffast.c trees.c uncompr.c zutil.c
-	$(AR) $(ARFLAGS) libz.a *.o
+libz.a: $(OBJS)
+	$(AR) $(ARFLAGS) $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -I.. -o $@ $<
 
 clean:
 	rm -f $(OBJS)

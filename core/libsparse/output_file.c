@@ -754,7 +754,22 @@ int write_file_chunk(struct output_file *out, unsigned int len,
 
 	int file_fd = open(file, O_RDONLY | O_BINARY);
 	if (file_fd < 0) {
-		return -errno;
+		if (errno == EACCES) {
+			/* This can happen for files with mode == 000, for example */
+			struct stat st;
+			if (lstat (file, &st) == 0) {
+				/* Temporarily allow reads */
+				chmod (file, 0444);
+				file_fd = open(file, O_RDONLY | O_BINARY);
+				chmod (file, st.st_mode);
+			}
+		}
+		if (file_fd < 0) {
+			/* hackish (since this is a library), but will do,
+			   otherwise would confuse users a lot */
+			fprintf (stderr, "Unable to open file %s\n", file);
+			return -errno;
+		}
 	}
 
 	ret = write_fd_chunk(out, len, file_fd, offset);

@@ -135,7 +135,7 @@ void bitmap_clear_bit(u8 *bitmap, u32 bit);
 int ext4_bg_has_super_block(int bg);
 void read_sb(int fd, struct ext4_super_block *sb);
 void write_sb(int fd, unsigned long long offset, struct ext4_super_block *sb);
-void write_ext4_image(int fd, int gz, int sparse, int crc);
+int write_ext4_image(int fd, int gz, int sparse, int crc);
 void ext4_create_fs_aux_info(void);
 void ext4_free_fs_aux_info(void);
 void ext4_fill_in_sb(void);

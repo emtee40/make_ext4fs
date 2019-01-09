@@ -494,6 +494,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	u16 root_mode;
 	char *mountpoint;
 	char *directory = NULL;
+	int rc;
 
 	if (setjmp(setjmp_env))
 		return EXIT_FAILURE; /* Handle a call to longjmp() */
@@ -653,7 +654,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 		wipe_block_device(fd, info.len);
 	}
 
-	write_ext4_image(fd, gzip, sparse, crc);
+	rc = write_ext4_image(fd, gzip, sparse, crc);
 
 	sparse_file_destroy(ext4_sparse_file);
 	ext4_sparse_file = NULL;
@@ -661,5 +662,5 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	free(mountpoint);
 	free(directory);
 
-	return 0;
+	return rc;
 }

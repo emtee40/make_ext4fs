@@ -231,7 +231,9 @@ int main(int argc, char **argv)
 	close(fd);
 	if (block_list_file)
 		fclose(block_list_file);
-	if (exitcode && strcmp(filename, "-"))
+	if (exitcode && strcmp(filename, "-")) {
+		fprintf(stderr, "Failed to create image %s, removing it\n", filename);
 		unlink(filename);
+	}
 	return exitcode;
 }
