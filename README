@@ -1,0 +1,8 @@
+This is yet another clone of make_ext4fs & friends, split from the
+superr/make_ext4fs repository.
+
+The reason for cloning was to fix a severe bug and to add a few features
+needed by the [Android firmware construction kit project](https://github.com/anpaza/afck).
+
+Also I needed identical builds for linux and windows. That was achieved
+by modifying makefiles to support cross-building with mingw32.
