@@ -6,3 +6,25 @@ needed by the [Android firmware construction kit project](https://github.com/anp
 
 Also I needed identical builds for linux and windows. That was achieved
 by modifying makefiles to support cross-building with mingw32.
+
+The behaviour of make_ext4fs has been modified in the following ways:
+
+ * In fs_config you can specify -1 in the place of uid, gid and mode.
+   If the respective field is -1, the original value is retained
+   (uid and gid have value 0 by default, and mode is taken from filesystem).
+
+ * If a file is missing from fs_config, a warning is displayed but
+   the uid, gid and mode are computed using the default rules
+   (same like fs_config is not specified).
+
+ * If during image creation it turns out that one of the source files
+   cannot be open, the tool will:
+
+        a) under Linux it will make an attempt to temporarily change
+            file mode to 0444, then open it, then restore the original
+            file mode.
+
+        b) if that fails anyway, a error message will be printed to stderr,
+            with a pointer to the file that cannot be read. Also a error
+            flag will be returned that will tell the tool to delete the
+            invalid image (and a message will be displayed about that too).
