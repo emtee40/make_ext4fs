@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#define _BSD_SOURCE
 #include <string.h>
 
 #ifdef USE_MINGW

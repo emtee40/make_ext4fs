@@ -1,6 +1,7 @@
 # Build configuration
 STATIC = 0
-DEBUG = 1
+DEBUG = 0
+DIET = 1
 #TARGET = windows
 
 CC = $(PREFIX)gcc -c
@@ -15,7 +16,7 @@ ifeq ($(DEBUG),1)
 CFLAGS += -g
 LDFLAGS += -g
 else
-CFLAGS += -O2
+CFLAGS += -DNDEBUG -O2
 LDFLAGS += -s
 endif
 
@@ -23,9 +24,13 @@ ifeq ($(STATIC),1)
 LDFLAGS += -static
 endif
 
+ifeq ($(DIET),1)
+PREFIX += diet #
+endif
+
 # run make TARGET=windows for a mingw32 build
 ifeq ($(TARGET),windows)
-PREFIX = x86_64-w64-mingw32-
+PREFIX += x86_64-w64-mingw32-
 CFLAGS += -DUSE_MINGW
 LIBS += -lwsock32
 E = .exe

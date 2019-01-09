@@ -119,7 +119,7 @@ hidden_def(set_selinuxmnt)
 static void init_lib(void) __attribute__ ((constructor));
 static void init_lib(void)
 {
-	selinux_page_size = sysconf(_SC_PAGE_SIZE);
+	selinux_page_size = sysconf(_SC_PAGESIZE);
 	init_selinuxmnt();
 }
 

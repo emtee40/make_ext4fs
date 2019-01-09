@@ -18,5 +18,5 @@ $(MKE4FS): $(MKE4FS_OBJS) $(OBJS)
 	$(CC) $(CFLAGS) -I$(SELIB)/include -I$(SPLIB)/include -I$(COLIB)/include -o $@ $<
 
 clean:
-	rm -f $(MKE4FS_OBJS)
+	rm -f $(MKE4FS_OBJS) $(OBJS)
 	rm -f $(MKE4FS)

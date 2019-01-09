@@ -47,6 +47,10 @@
 #define mmap64 mmap
 #define off64_t off_t
 #endif
+#if defined(__dietlibc__)
+#define ftruncate64 ftruncate
+#define mmap64 mmap
+#endif
 
 #define min(a, b) \
 	({ typeof(a) _a = (a); typeof(b) _b = (b); (_a < _b) ? _a : _b; })

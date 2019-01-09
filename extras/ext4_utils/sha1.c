@@ -16,6 +16,8 @@
  */
 
 #define SHA1HANDSOFF		/* Copies data before messing with it. */
+#define _BSD_SOURCE
+#define _GNU_SOURCE
 
 #ifndef USE_MINGW
 #include <sys/cdefs.h>
