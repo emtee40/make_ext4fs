@@ -36,6 +36,8 @@ extern "C" {
 #include <stddef.h>
 #endif
 
+#include <stdint.h>
+
 /* The following bits are used to determine the regexp syntax we
    recognize.  The set/not-set meanings are chosen so that Emacs syntax
    remains the value 0.  The bits are given in alphabetical order, and

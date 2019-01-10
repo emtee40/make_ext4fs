@@ -7,7 +7,7 @@ OBJS = ext4fixup.o ext4_utils.o allocate.o contents.o extent.o \
 MKE4FS_OBJS = make_ext4fs_main.o make_ext4fs.o
 
 ifeq ($E,.exe)
-OBJS += windows_supp.o regex.o
+OBJS += windows_supp.o regex/regex.o
 endif
 
 all: make_ext4fs$E
