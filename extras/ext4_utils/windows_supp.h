@@ -25,6 +25,9 @@
 #define S_IFLNK		0xA000
 #define S_ISLNK(m)	(((m) & S_IFMT) == S_IFLNK)
 
+typedef unsigned int uid_t;
+typedef unsigned int gid_t;
+
 extern int scandir (
 	 const char *dir,
 	 struct dirent ***namelist,

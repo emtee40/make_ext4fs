@@ -357,7 +357,7 @@ typedef struct re_pattern_buffer regex_t;
 #define RE_EXACTN_VALUE 1
 
 /* Type for byte offsets within the string.  POSIX mandates this.  */
-typedef long regoff_t;
+typedef intptr_t regoff_t;
 
 
 /* This is the structure we store register match data in.  See

@@ -7,6 +7,10 @@
 
 #include <selinux/label.h>
 
+#ifdef USE_MINGW
+#include "windows_supp.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

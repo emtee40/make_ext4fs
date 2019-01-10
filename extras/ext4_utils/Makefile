@@ -7,7 +7,7 @@ OBJS = ext4fixup.o ext4_utils.o allocate.o contents.o extent.o \
 MKE4FS_OBJS = make_ext4fs_main.o make_ext4fs.o
 
 ifeq ($E,.exe)
-OBJS += windows_supp.o
+OBJS += windows_supp.o regex.o
 endif
 
 all: make_ext4fs$E
@@ -16,7 +16,7 @@ make_ext4fs$E: $(MKE4FS_OBJS) $(OBJS) $(SELIB)/src/libselinux.a $(SPLIB)/libspar
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -I$(SELIB)/include -I$(SPLIB)/include -I$(COLIB)/include -o $@ $<
+	$(CC) $(CFLAGS) -I. -I$(SELIB)/include -I$(SPLIB)/include -I$(COLIB)/include -o $@ $<
 
 clean:
 	rm -f $(MKE4FS_OBJS) $(OBJS)

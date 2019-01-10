@@ -39,7 +39,7 @@
 #define O_BINARY 0
 #else
 #ifdef __MINGW64__
-/* for some reason, ftruncate is a NOP on mingw64 */
+/* bug: for now, ftruncate is a NOP on mingw64 */
 #undef ftruncate
 #endif
 #define ftruncate64 ftruncate

@@ -35,18 +35,14 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifdef USE_MINGW
-
-#include "windows_supp.h"
-
-#else
-
 #include <selinux/selinux.h>
 #include <selinux/label.h>
 #include <selinux/android.h>
 
+#ifdef USE_MINGW
+#include "windows_supp.h"
+#else
 #define O_BINARY 0
-
 #endif
 
 /* TODO: Not implemented:
@@ -79,7 +75,6 @@ static u32 build_default_directory_structure(const char *dir_path,
 	inode_set_permissions(inode, dentries.mode,
 		dentries.uid, dentries.gid, dentries.mtime);
 
-#ifndef USE_MINGW
 	if (sehnd) {
 		char *path = NULL;
 		char *secontext = NULL;
@@ -93,7 +88,6 @@ static u32 build_default_directory_structure(const char *dir_path,
 		}
 		free(path);
 	}
-#endif
 
 	return root_inode;
 }
@@ -185,7 +179,6 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 #endif
 		}
 		dentries[i].mode &= (S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO);
-#ifndef USE_MINGW
 		if (sehnd) {
 			if (selabel_lookup(sehnd, &dentries[i].secon, dentries[i].path, st.st_mode) < 0) {
 				error("cannot lookup security context for %s", dentries[i].path);
@@ -194,7 +187,6 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 			if (dentries[i].secon && verbose)
 				printf("Labeling %s as %s\n", dentries[i].path, dentries[i].secon);
 		}
-#endif
 
 		if (S_ISREG(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_REG_FILE;
@@ -240,12 +232,10 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		dentries[0].file_type = EXT4_FT_DIR;
 		dentries[0].uid = 0;
 		dentries[0].gid = 0;
-#ifndef USE_MINGW
 		if (sehnd) {
 			if (selabel_lookup(sehnd, &dentries[0].secon, dentries[0].path, dentries[0].mode) < 0)
 				error("cannot lookup security context for %s", dentries[0].path);
 		}
-#endif
 		entries++;
 		dirs++;
 	}
@@ -585,7 +575,6 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	root_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 	inode_set_permissions(root_inode_num, root_mode, 0, 0, 0);
 
-#ifndef USE_MINGW
 	if (sehnd) {
 		char *secontext = NULL;
 
@@ -600,7 +589,6 @@ int make_ext4fs_internal(int fd, const char *_directory,
 		}
 		freecon(secontext);
 	}
-#endif
 
 	ext4_update_free();
 
