@@ -37,32 +37,7 @@
 
 #ifdef USE_MINGW
 
-#include <winsock2.h>
-#include "scandir_win32.h"
-
-/* no symlinks in Windows */
-#define lstat stat
-
-/* These match the Linux definitions of these flags.
-   L_xx is defined to avoid conflicting with the win32 versions.
-*/
-#define L_S_IRUSR 00400
-#define L_S_IWUSR 00200
-#define L_S_IXUSR 00100
-#ifndef S_IRWXU
-#define S_IRWXU (L_S_IRUSR | L_S_IWUSR | L_S_IXUSR)
-#define S_IRGRP 00040
-#define S_IWGRP 00020
-#define S_IXGRP 00010
-#define S_IRWXG (S_IRGRP | S_IWGRP | S_IXGRP)
-#define S_IROTH 00004
-#define S_IWOTH 00002
-#define S_IXOTH 00001
-#define S_IRWXO (S_IROTH | S_IWOTH | S_IXOTH)
-#endif
-#define S_ISUID 0004000
-#define S_ISGID 0002000
-#define S_ISVTX 0001000
+#include "windows_supp.h"
 
 #else
 
@@ -185,7 +160,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		}
 
 		dentries[i].size = st.st_size;
-		dentries[i].mode = st.st_mode & (S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO);
+		dentries[i].mode = st.st_mode;
 		if (fixed_time == -1) {
 			dentries[i].mtime = st.st_mtime;
 		} else {
@@ -209,6 +184,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 			error("can't set android permissions - built without android support");
 #endif
 		}
+		dentries[i].mode &= (S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO);
 #ifndef USE_MINGW
 		if (sehnd) {
 			if (selabel_lookup(sehnd, &dentries[i].secon, dentries[i].path, st.st_mode) < 0) {
@@ -235,12 +211,10 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		} else if (S_ISSOCK(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_SOCK;
 #endif
-#ifdef S_ISLNK
 		} else if (S_ISLNK(st.st_mode)) {
 			dentries[i].file_type = EXT4_FT_SYMLINK;
 			dentries[i].link = calloc(info.block_size, 1);
 			readlink(dentries[i].full_path, dentries[i].link, info.block_size - 1);
-#endif
 		} else {
 			error("unknown file type on %s", dentries[i].path);
 			i--;
@@ -254,6 +228,8 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		struct dentry *tmp = calloc(entries + 1, sizeof(struct dentry));
 		memset(tmp, 0, sizeof(struct dentry));
 		memcpy(tmp + 1, dentries, entries * sizeof(struct dentry));
+		if (dentries)
+			free (dentries);
 		dentries = tmp;
 
 		dentries[0].filename = strdup("lost+found");

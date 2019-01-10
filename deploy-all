@@ -13,4 +13,4 @@ make clean TARGET=linux
 make deploy DIET=0 STATIC=0 DEBUG=0 TARGET=windows
 make clean TARGET=windows
 
-echo -e "\e[1;37mDeployed susexfully\e[0m"
+echo -e "\e[1;37mDeployed susexfully :)\e[0m"

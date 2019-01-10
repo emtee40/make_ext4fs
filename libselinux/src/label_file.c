@@ -19,8 +19,7 @@
 #include "label_internal.h"
 
 #ifdef USE_MINGW
-#define	S_IFLNK		(S_IFREG | S_IFCHR)
-#define	S_IFSOCK	(S_IFREG | S_IFDIR)
+#include "windows_supp.h"
 #endif
 
 /*
@@ -367,9 +366,11 @@ static int process_line(struct selabel_handle *rec,
 		case 'l':
 			spec_arr[nspec].mode = S_IFLNK;
 			break;
+#ifdef S_IFSOCK
 		case 's':
 			spec_arr[nspec].mode = S_IFSOCK;
 			break;
+#endif
 		case '-':
 			spec_arr[nspec].mode = S_IFREG;
 			break;

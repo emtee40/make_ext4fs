@@ -35,7 +35,7 @@
 #include "indirect.h"
 
 #ifdef USE_MINGW
-#define S_IFLNK 0  /* used by make_link, not needed under mingw */
+#include "windows_supp.h"
 #endif
 
 static struct block_allocation* saved_allocation_head = NULL;
