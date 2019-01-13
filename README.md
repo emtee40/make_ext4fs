@@ -42,9 +42,9 @@ The behaviour of make_ext4fs has been modified in the following ways:
   hex dump of such a file, say, /bin/ls:
 
   ```
-00000000 21 3C 73 79 │ 6D 6C 69 6E │ 6B 3E FF FE │ 74 00 6F 00 │ 79 00 62 00  !<symlink>..t.o.y.b.
-00000014 6F 00 78 00 │ 5F 00 76 00 │ 65 00 6E 00 │ 64 00 6F 00 │ 72 00 00 00  o.x._.v.e.n.d.o.r...
-```
+  00000000 21 3C 73 79 │ 6D 6C 69 6E │ 6B 3E FF FE │ 74 00 6F 00 │ 79 00 62 00  !<symlink>..t.o.y.b.
+  00000014 6F 00 78 00 │ 5F 00 76 00 │ 65 00 6E 00 │ 64 00 6F 00 │ 72 00 00 00  o.x._.v.e.n.d.o.r...
+  ```
 
   The resulting ext4 image will contain a real link /bin/ls pointing to
   "toybox_vendor".
