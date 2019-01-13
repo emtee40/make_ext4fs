@@ -1,3 +1,5 @@
+[![English](http://flags.fmcdn.net/style/silk/png/gb.png)](README.md), [![Русский](http://flags.fmcdn.net/style/silk/png/ru.png)](README.ru.md)
+
 Ещё один клон make_ext4fs и его друзей, ответвление от репозитория
 superr/make_ext4fs.
 
