@@ -13,4 +13,8 @@ make clean TARGET=linux
 make deploy DIET=0 STATIC=0 DEBUG=0 TARGET=windows
 make clean TARGET=windows
 
+make deploy TARGET=linux ARCH=aarch64 DEBUG=0 STATIC=1 DIET=0 \
+	PREFIX=$(readlink -f ../OpenLinux_20180907/toolchain/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin)/aarch64-linux-gnu-
+make clean TARGET=linux
+
 echo -e "\e[1;37mDeployed susexfully :)\e[0m"

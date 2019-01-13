@@ -12,7 +12,10 @@ LIBS =
 AR = $(PREFIX)ar
 ARFLAGS = rcs
 
-DEPLOY = deploy/
+ifeq ($(ARCH),)
+ARCH = `uname -m`
+endif
+DEPLOY = deploy/$(ARCH)/
 
 ifeq ($(DEBUG),1)
 CFLAGS += -g
@@ -24,14 +27,13 @@ LDFLAGS += -s
 DEPLOY := $(DEPLOY)release-
 endif
 
-ifeq ($(STATIC),1)
-LDFLAGS += -static
-DEPLOY := $(DEPLOY)static-
-endif
-
 ifeq ($(DIET),1)
 PREFIX += diet #
 DEPLOY := $(DEPLOY)diet-
+ifeq ($(STATIC),1)
+# DIET builds are always static, but -static will produce wrong results
+STATIC := 0
+endif
 endif
 
 # run make TARGET=windows for a mingw32 build
@@ -43,6 +45,11 @@ E = .exe
 DEPLOY := $(DEPLOY)windows
 else
 DEPLOY := $(DEPLOY)linux
+endif
+
+ifeq ($(STATIC),1)
+LDFLAGS += -static
+DEPLOY := $(DEPLOY)static-
 endif
 
 SELIB = libselinux
