@@ -5,7 +5,7 @@ The reason for cloning was to fix a severe bug and to add a few features
 needed by the [Android firmware construction kit project](https://github.com/anpaza/afck).
 
 Also I needed identical builds for linux and windows. That was achieved
-by modifying makefiles to support cross-building with mingw32.
+by modifying makefiles to support cross-building with mingw.
 
 The behaviour of make_ext4fs has been modified in the following ways:
 
@@ -28,13 +28,13 @@ The behaviour of make_ext4fs has been modified in the following ways:
    cannot be open, the tool will:
 
         a) under Linux it will make an attempt to temporarily change
-            file mode to 0444, then open it, then restore the original
-            file mode.
+           file mode to 0444, then open it, then restore the original
+           file mode.
 
         b) if that fails anyway, a error message will be printed to stderr,
-            with a pointer to the file that cannot be read. Also a error
-            flag will be returned that will tell the tool to delete the
-            invalid image (and a message will be displayed about that too).
+           with a pointer to the file that cannot be read. Also a error
+           flag will be returned that will tell the tool to delete the
+           invalid image (and a message will be displayed about that too).
 
  * Mingw build now has support for Cygwin-style symlinks. Here's a example
    hex dump of such a file, say, /bin/ls:
