@@ -53,3 +53,5 @@ The behaviour of make_ext4fs has been modified in the following ways:
   extracted from file system (this is obvious), but instead the -S option
   can be used to provide a filename -> SELinux context map. You can use
   regular expressions in file names.
+
+* Fixed crashes when image size is not enough for filesystem metadata.

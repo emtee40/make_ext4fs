@@ -2,7 +2,7 @@
 
 set -e
 
-rm -rf deploy
+rm -rf deploy/{x86_64,aarch64}
 
 make clean TARGET=linux
 make clean TARGET=windows

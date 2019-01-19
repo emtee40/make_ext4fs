@@ -736,6 +736,8 @@ u32 allocate_inode()
 /* Returns the number of free inodes in a block group */
 u32 get_free_inodes(u32 bg)
 {
+	if (bg >= aux_info.groups)
+		return 0;
 	return aux_info.bgs[bg].free_inodes;
 }
 

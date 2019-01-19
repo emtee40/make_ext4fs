@@ -36,6 +36,11 @@ STATIC := 0
 endif
 endif
 
+ifeq ($(STATIC),1)
+LDFLAGS += -static
+DEPLOY := $(DEPLOY)static-
+endif
+
 # run make TARGET=windows for a mingw32 build
 ifeq ($(TARGET),windows)
 PREFIX += x86_64-w64-mingw32-
@@ -45,11 +50,6 @@ E = .exe
 DEPLOY := $(DEPLOY)windows
 else
 DEPLOY := $(DEPLOY)linux
-endif
-
-ifeq ($(STATIC),1)
-LDFLAGS += -static
-DEPLOY := $(DEPLOY)static-
 endif
 
 SELIB = libselinux
