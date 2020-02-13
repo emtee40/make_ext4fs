@@ -2,7 +2,7 @@
 STATIC = 0
 DEBUG = 0
 DIET = 0
-#TARGET = windows
+TARGET = windows
 
 CC = $(PREFIX)gcc -c
 CFLAGS = -DUSE_MMAP -DHOST -DANDROID
