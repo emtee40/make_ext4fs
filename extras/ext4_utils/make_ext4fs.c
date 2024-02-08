@@ -308,11 +308,14 @@ static u32 compute_block_size()
 static u32 compute_journal_blocks()
 {
 	u32 journal_blocks = DIV_ROUND_UP(info.len, info.block_size) / 64;
-	if (journal_blocks < 1024)
-		journal_blocks = 1024;
-	if (journal_blocks > 32768)
-		journal_blocks = 32768;
-	return journal_blocks;
+	switch(journal_blocks) {
+	case < 1024:
+		return 1024;
+	case > 32768:
+		return 32768;
+	default :
+		return journal_blocks;
+	}
 }
 
 static u32 compute_blocks_per_group()
