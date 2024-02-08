@@ -100,19 +100,15 @@ static void reserve_tindirect_block(struct block_allocation *alloc, int len)
 
 static void fill_indirect_block(u32 *ind_block, int len, struct block_allocation *alloc)
 {
-	int i;
-	for (i = 0; i < len; i++) {
+	for (int i = 0; i < len; i++) {
 		ind_block[i] = get_block(alloc, i);
 	}
 }
 
 static void fill_dindirect_block(u32 *dind_block, int len, struct block_allocation *alloc)
 {
-	int i;
-	u32 ind_block;
-
-	for (i = 0; len >  0; i++) {
-		ind_block = get_oob_block(alloc, 0);
+	for (int i = 0; len >  0; i++) {
+		u32 ind_block = get_oob_block(alloc, 0);
 		if (advance_oob_blocks(alloc, 1)) {
 			error("failed to reserve oob block");
 			return;
@@ -138,11 +134,9 @@ static void fill_dindirect_block(u32 *dind_block, int len, struct block_allocati
 
 static void fill_tindirect_block(u32 *tind_block, int len, struct block_allocation *alloc)
 {
-	int i;
-	u32 dind_block;
 
-	for (i = 0; len > 0; i++) {
-		dind_block = get_oob_block(alloc, 0);
+	for (int i = 0; len > 0; i++) {
+		u32 dind_block = get_oob_block(alloc, 0);
 		if (advance_oob_blocks(alloc, 1)) {
 			error("failed to reserve oob block");
 			return;
@@ -167,9 +161,8 @@ static int inode_attach_direct_blocks(struct ext4_inode *inode,
 		struct block_allocation *alloc, u32 *block_len)
 {
 	int len = min(*block_len, EXT4_NDIR_BLOCKS);
-	int i;
 
-	for (i = 0; i < len; i++) {
+	for (int i = 0; i < len; i++) {
 		inode->i_block[i] = get_block(alloc, i);
 	}
 
