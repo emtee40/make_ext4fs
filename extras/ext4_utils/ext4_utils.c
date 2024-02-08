@@ -98,9 +98,7 @@ int ext4_bg_has_super_block(int bg)
 /* Function to read the primary superblock */
 void read_sb(int fd, struct ext4_super_block *sb)
 {
-	off64_t ret;
-
-	ret = lseek64(fd, 1024, SEEK_SET);
+	off64_t ret = lseek64(fd, 1024, SEEK_SET);
 	if (ret < 0)
 		critical_error_errno("failed to seek to superblock");
 
@@ -114,9 +112,7 @@ void read_sb(int fd, struct ext4_super_block *sb)
 /* Function to write a primary or backup superblock at a given offset */
 void write_sb(int fd, unsigned long long offset, struct ext4_super_block *sb)
 {
-	off64_t ret;
-
-	ret = lseek64(fd, offset, SEEK_SET);
+	off64_t ret = lseek64(fd, offset, SEEK_SET);
 	if (ret < 0)
 		critical_error_errno("failed to seek to superblock");
 
@@ -176,9 +172,7 @@ void ext4_create_fs_aux_info()
 
 void ext4_free_fs_aux_info()
 {
-	unsigned int i;
-
-	for (i=0; i<aux_info.groups; i++) {
+	for (unsigned int i=0; i<aux_info.groups; i++) {
 		if (aux_info.backup_sb[i])
 			free(aux_info.backup_sb[i]);
 	}
@@ -330,7 +324,6 @@ void ext4_create_resize_inode()
 {
 	struct block_allocation *reserve_inode_alloc = create_allocation();
 	u32 reserve_inode_len = 0;
-	unsigned int i;
 
 	struct ext4_inode *inode = get_inode(EXT4_RESIZE_INO);
 	if (inode == NULL) {
@@ -338,7 +331,7 @@ void ext4_create_resize_inode()
 		return;
 	}
 
-	for (i = 0; i < aux_info.groups; i++) {
+	for (unsigned int i = 0; i < aux_info.groups; i++) {
 		if (ext4_bg_has_super_block(i)) {
 			u64 group_start_block = aux_info.first_data_block + i *
 				info.blocks_per_group;
@@ -396,9 +389,7 @@ void ext4_create_journal_inode()
    block group */
 void ext4_update_free()
 {
-	u32 i;
-
-	for (i = 0; i < aux_info.groups; i++) {
+	for (u32 i = 0; i < aux_info.groups; i++) {
 		u32 bg_free_blocks = get_free_blocks(i);
 		u32 bg_free_inodes = get_free_inodes(i);
 		u16 crc;
@@ -457,11 +448,10 @@ int is_block_device_fd(int fd)
 u64 get_file_size(int fd)
 {
 	struct stat buf;
-	int ret;
 	u64 reserve_len = 0;
 	s64 computed_size;
 
-	ret = fstat(fd, &buf);
+	int ret = fstat(fd, &buf);
 	if (ret)
 		return 0;
 
@@ -499,14 +489,13 @@ u64 parse_num(const char *arg)
 
 int read_ext(int fd, int verbose)
 {
-	off64_t ret;
 	struct ext4_super_block sb;
 
 	read_sb(fd, &sb);
 
 	ext4_parse_sb_info(&sb);
 
-	ret = lseek64(fd, info.len, SEEK_SET);
+	off64_t ret = lseek64(fd, info.len, SEEK_SET);
 	if (ret < 0)
 		critical_error_errno("failed to seek to end of input image");
 
@@ -540,4 +529,3 @@ int read_ext(int fd, int verbose)
 
 	return 0;
 }
-
