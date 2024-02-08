@@ -47,10 +47,9 @@ struct block_allocation* get_saved_allocation_chain() {
 static u32 dentry_size(u32 entries, struct dentry *dentries)
 {
 	u32 len = 24;
-	unsigned int i;
 	unsigned int dentry_len;
 
-	for (i = 0; i < entries; i++) {
+	for (unsigned int i = 0; i < entries; i++) {
 		dentry_len = 8 + EXT4_ALIGN(strlen(dentries[i].filename), 4);
 		if (len % info.block_size + dentry_len > info.block_size)
 			len += info.block_size - (len % info.block_size);
