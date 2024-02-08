@@ -21,5 +21,5 @@ ext4fixup$E: $(MKE4FSFIXUP_OBJS) $(OBJS) $(SELIB)/src/libselinux.a $(SPLIB)/libs
 	$(CC) $(CFLAGS) -I. -I$(SELIB)/include -I$(SPLIB)/include -I$(COLIB)/include -o $@ $<
 
 clean:
-	rm -f $(MKE4FS_OBJS) $(OBJS)
-	rm -f make_ext4fs$E
+	rm -f $(MKE4FS_OBJS) $(OBJS) $(MKE4FSFIXUP_OBJS)
+	rm -f make_ext4fs$E ext4fixup$E
