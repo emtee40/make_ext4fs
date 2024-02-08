@@ -28,7 +28,9 @@
 #ifdef ANDROID
 #include <private/android_filesystem_config.h>
 #endif
-
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 #include <selinux/selinux.h>
 #include <selinux/label.h>
 #include <selinux/android.h>
