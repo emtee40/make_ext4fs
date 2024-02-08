@@ -39,7 +39,7 @@
 #include "ext4_utils.h"
 #include "canned_fs_config.h"
 
-#ifndef USE_MINGW /* O_BINARY is windows-specific flag */
+#ifndef O_BINARY /* O_BINARY is windows-specific flag */
 #define O_BINARY 0
 #endif
 
