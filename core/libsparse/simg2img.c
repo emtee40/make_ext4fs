@@ -38,8 +38,6 @@ void usage()
 int main(int argc, char *argv[])
 {
 	int in;
-	int out;
-	int i;
 	struct sparse_file *s;
 
 	if (argc < 3) {
@@ -47,13 +45,13 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0664);
+	int out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0664);
 	if (out < 0) {
 		fprintf(stderr, "Cannot open output file %s\n", argv[argc - 1]);
 		exit(-1);
 	}
 
-	for (i = 1; i < argc - 1; i++) {
+	for (int i = 1; i < argc - 1; i++) {
 		if (strcmp(argv[i], "-") == 0) {
 			in = STDIN_FILENO;
 		} else {

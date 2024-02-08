@@ -14,10 +14,9 @@
 static int __attribute__ ((format(printf, 2, 3)))
 default_selinux_log(int type __attribute__((unused)), const char *fmt, ...)
 {
-	int rc;
 	va_list ap;
 	va_start(ap, fmt);
-	rc = vfprintf(stderr, fmt, ap);
+	int rc = vfprintf(stderr, fmt, ap);
 	va_end(ap);
 	return rc;
 }

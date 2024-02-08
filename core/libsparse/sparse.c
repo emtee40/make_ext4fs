@@ -161,17 +161,15 @@ static int write_all_blocks(struct sparse_file *s, struct output_file *out)
 int sparse_file_write(struct sparse_file *s, int fd, bool gz, bool sparse,
 		bool crc)
 {
-	int ret;
-	int chunks;
 	struct output_file *out;
 
-	chunks = sparse_count_chunks(s);
+	int chunks = sparse_count_chunks(s);
 	out = output_file_open_fd(fd, s->block_size, s->len, gz, sparse, chunks, crc);
 
 	if (!out)
 		return -ENOMEM;
 
-	ret = write_all_blocks(s, out);
+	int ret = write_all_blocks(s, out);
 
 	output_file_close(out);
 
@@ -181,18 +179,16 @@ int sparse_file_write(struct sparse_file *s, int fd, bool gz, bool sparse,
 int sparse_file_callback(struct sparse_file *s, bool sparse, bool crc,
 		int (*write)(void *priv, const void *data, int len), void *priv)
 {
-	int ret;
-	int chunks;
 	struct output_file *out;
 
-	chunks = sparse_count_chunks(s);
+	int chunks = sparse_count_chunks(s);
 	out = output_file_open_callback(write, priv, s->block_size, s->len, false,
 			sparse, chunks, crc);
 
 	if (!out)
 		return -ENOMEM;
 
-	ret = write_all_blocks(s, out);
+	int ret = write_all_blocks(s, out);
 
 	output_file_close(out);
 
@@ -220,7 +216,6 @@ int sparse_file_foreach_chunk(struct sparse_file *s, bool sparse, bool crc,
 	void *priv)
 {
 	int ret;
-	int chunks;
 	struct chunk_data chk;
 	struct output_file *out;
 	struct backed_block *bb;
@@ -228,7 +223,7 @@ int sparse_file_foreach_chunk(struct sparse_file *s, bool sparse, bool crc,
 	chk.priv = priv;
 	chk.write = write;
 	chk.block = chk.nr_blocks = 0;
-	chunks = sparse_count_chunks(s);
+	int chunks = sparse_count_chunks(s);
 	out = output_file_open_callback(foreach_chunk_write, &chk,
 					s->block_size, s->len, false, sparse,
 					chunks, crc);
@@ -259,7 +254,6 @@ static int out_counter_write(void *priv, const void *data __unused, int len)
 
 int64_t sparse_file_len(struct sparse_file *s, bool sparse, bool crc)
 {
-	int ret;
 	int chunks = sparse_count_chunks(s);
 	int64_t count = 0;
 	struct output_file *out;
@@ -270,7 +264,7 @@ int64_t sparse_file_len(struct sparse_file *s, bool sparse, bool crc)
 		return -1;
 	}
 
-	ret = write_all_blocks(s, out);
+	int ret = write_all_blocks(s, out);
 
 	output_file_close(out);
 

@@ -224,9 +224,7 @@ static int process_chunk(struct sparse_file *s, int fd, off64_t offset,
 		unsigned int cur_block, uint32_t *crc_ptr)
 {
 	int ret;
-	unsigned int chunk_data_size;
-
-	chunk_data_size = chunk_header->total_sz - chunk_hdr_sz;
+	unsigned int chunk_data_size = chunk_header->total_sz - chunk_hdr_sz;
 
 	switch (chunk_header->chunk_type) {
 		case CHUNK_TYPE_RAW:
@@ -418,12 +416,11 @@ int sparse_file_read(struct sparse_file *s, int fd, bool sparse, bool crc)
 
 struct sparse_file *sparse_file_import(int fd, bool verbose, bool crc)
 {
-	int ret;
 	sparse_header_t sparse_header;
 	int64_t len;
 	struct sparse_file *s;
 
-	ret = read_all(fd, &sparse_header, sizeof(sparse_header));
+	int ret = read_all(fd, &sparse_header, sizeof(sparse_header));
 	if (ret < 0) {
 		verbose_error(verbose, ret, "header");
 		return NULL;

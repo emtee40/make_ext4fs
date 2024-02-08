@@ -138,10 +138,9 @@ static int file_skip(struct output_file *out, int64_t cnt)
 
 static int file_pad(struct output_file *out, int64_t len)
 {
-	int ret;
 	struct output_file_normal *outn = to_output_file_normal(out);
 
-	ret = ftruncate64(outn->fd, len);
+	int ret = ftruncate64(outn->fd, len);
 	if (ret < 0) {
 		return -errno;
 	}
@@ -202,10 +201,9 @@ static int gz_file_open(struct output_file *out, int fd)
 
 static int gz_file_skip(struct output_file *out, int64_t cnt)
 {
-	off64_t ret;
 	struct output_file_gz *outgz = to_output_file_gz(out);
 
-	ret = gzseek(outgz->gz_fd, cnt, SEEK_CUR);
+	off64_t ret = gzseek(outgz->gz_fd, cnt, SEEK_CUR);
 	if (ret < 0) {
 		error_errno("gzseek");
 		return -1;
@@ -215,10 +213,9 @@ static int gz_file_skip(struct output_file *out, int64_t cnt)
 
 static int gz_file_pad(struct output_file *out, int64_t len)
 {
-	off64_t ret;
 	struct output_file_gz *outgz = to_output_file_gz(out);
 
-	ret = gztell(outgz->gz_fd);
+	off64_t ret = gztell(outgz->gz_fd);
 	if (ret < 0) {
 		return -1;
 	}
