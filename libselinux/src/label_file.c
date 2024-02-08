@@ -131,12 +131,11 @@ static int find_stem_from_spec(struct saved_data *data, const char *buf)
  * too complex for us).  Makes buf point to the text AFTER the stem. */
 static int find_stem_from_file(struct saved_data *data, const char **buf)
 {
-	int i;
 	int stem_len = get_stem_from_file_name(*buf);
 
 	if (!stem_len)
 		return -1;
-	for (i = 0; i < data->num_stems; i++) {
+	for (int i = 0; i < data->num_stems; i++) {
 		if (stem_len == data->stem_arr[i].len
 		    && !strncmp(*buf, data->stem_arr[i].buf, stem_len)) {
 			*buf += stem_len;
@@ -188,13 +187,9 @@ static int nodups_specs(struct saved_data *data, const char *path)
 /* Determine if the regular expression specification has any meta characters. */
 static void spec_hasMetaChars(struct spec *spec)
 {
-	char *c;
-	size_t len;
-	char *end;
-
-	c = spec->regex_str;
-	len = strlen(spec->regex_str);
-	end = c + len;
+	char *c = spec->regex_str;
+	size_t len = strlen(spec->regex_str);
+	char *end = c + len;
 
 	spec->hasMetaChars = 0;
 	spec->prefix_len = len;
