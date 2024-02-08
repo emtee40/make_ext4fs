@@ -4,12 +4,12 @@ DEBUG = 0
 DIET = 0
 TARGET = windows
 
-CC = $(PREFIX)gcc -c
+CC = gcc -c
 CFLAGS = -DUSE_MMAP -DHOST -DANDROID
-LD = $(PREFIX)gcc
+LD = gcc
 LDFLAGS =
 LIBS =
-AR = $(PREFIX)ar
+AR = ar
 ARFLAGS = rcs
 
 ifeq ($(ARCH),)
