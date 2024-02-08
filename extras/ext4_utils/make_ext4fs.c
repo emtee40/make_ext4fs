@@ -300,27 +300,12 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 	return inode;
 }
 
-static u32 compute_block_size()
-{
-	return 4096;
-}
-
 static u32 compute_journal_blocks()
 {
 	u32 journal_blocks = DIV_ROUND_UP(info.len, info.block_size) / 64;
 	if (journal_blocks < 1024){return 1024;}
 	if (journal_blocks > 32768){return 32768;}
 	return journal_blocks;
-}
-
-static u32 compute_blocks_per_group()
-{
-	return info.block_size * 8;
-}
-
-static u32 compute_inodes()
-{
-	return DIV_ROUND_UP(info.len, info.block_size) / 4;
 }
 
 static u32 compute_inodes_per_group()
@@ -491,7 +476,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	}
 
 	if (info.block_size <= 0)
-		info.block_size = compute_block_size();
+		info.block_size = 4096;
 
 	/* Round down the filesystem length to be a multiple of the block size */
 	info.len &= ~((u64)info.block_size - 1);
@@ -505,10 +490,10 @@ int make_ext4fs_internal(int fd, const char *_directory,
 		info.journal_blocks = 0;
 
 	if (info.blocks_per_group <= 0)
-		info.blocks_per_group = compute_blocks_per_group();
+		info.blocks_per_group = info.block_size * 8;
 
 	if (info.inodes <= 0)
-		info.inodes = compute_inodes();
+		info.inodes = DIV_ROUND_UP(info.len, info.block_size) / 4;
 
 	if (info.inode_size <= 0)
 		info.inode_size = 256;
