@@ -44,7 +44,9 @@
 #else
 #define O_BINARY 0
 #endif
-
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 /* TODO: Not implemented:
    Allocating blocks in the same block group as the file inode
    Hash or binary tree directories
