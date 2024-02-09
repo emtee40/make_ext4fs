@@ -61,8 +61,6 @@ static int filter_dot(const struct dirent *d)
 static u32 build_default_directory_structure(const char *dir_path,
 					     struct selabel_handle *sehnd)
 {
-	u32 inode;
-	u32 root_inode;
 	struct dentry dentries = {
 			.filename = "lost+found",
 			.file_type = EXT4_FT_DIR,
@@ -71,8 +69,8 @@ static u32 build_default_directory_structure(const char *dir_path,
 			.gid = 0,
 			.mtime = 0,
 	};
-	root_inode = make_directory(0, 1, &dentries, 1);
-	inode = make_directory(root_inode, 0, NULL, 0);
+	u32 root_inode = make_directory(0, 1, &dentries, 1);
+	u32 inode = make_directory(root_inode, 0, NULL, 0);
 	*dentries.inode = inode;
 	inode_set_permissions(inode, dentries.mode,
 		dentries.uid, dentries.gid, dentries.mtime);
