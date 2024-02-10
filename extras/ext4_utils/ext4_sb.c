@@ -18,9 +18,8 @@
 
 #include "ext4_sb.h"
 
-int ext4_parse_sb(struct ext4_super_block *sb, struct fs_info *info)
+int ext4_parse_sb(const struct ext4_super_block *sb, struct fs_info *info)
 {
-	uint64_t len_blocks;
 
         if (sb->s_magic != EXT4_SUPER_MAGIC)
                 return -EINVAL;
@@ -39,7 +38,7 @@ int ext4_parse_sb(struct ext4_super_block *sb, struct fs_info *info)
 	info->bg_desc_reserve_blocks = sb->s_reserved_gdt_blocks;
 	info->label = sb->s_volume_name;
 
-	len_blocks = ((uint64_t)sb->s_blocks_count_hi << 32) +
+	uint64_t len_blocks = ((uint64_t)sb->s_blocks_count_hi << 32) +
                 sb->s_blocks_count_lo;
 	info->len = (uint64_t)info->block_size * len_blocks;
 
