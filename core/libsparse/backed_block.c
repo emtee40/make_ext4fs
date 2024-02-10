@@ -191,7 +191,6 @@ void backed_block_list_move(struct backed_block_list *from,
 static int merge_bb(struct backed_block_list *bbl,
 		struct backed_block *a, struct backed_block *b)
 {
-	unsigned int block_len;
 
 	/* Block doesn't exist (possible if one block is the last block) */
 	if (!a || !b) {
@@ -206,7 +205,7 @@ static int merge_bb(struct backed_block_list *bbl,
 	}
 
 	/* Blocks are not adjacent */
-	block_len = a->len / bbl->block_size; /* rounds down */
+	unsigned int block_len = a->len / bbl->block_size; /* rounds down */
 	if (a->block + block_len != b->block) {
 		return -EINVAL;
 	}
@@ -362,10 +361,9 @@ int backed_block_add_fd(struct backed_block_list *bbl, int fd, int64_t offset,
 	return queue_bb(bbl, bb);
 }
 
-int backed_block_split(struct backed_block_list *bbl, struct backed_block *bb,
+int backed_block_split(const struct backed_block_list *bbl, struct backed_block *bb,
 		unsigned int max_len)
 {
-	struct backed_block *new_bb;
 
 	max_len = ALIGN_DOWN(max_len, bbl->block_size);
 
@@ -373,7 +371,7 @@ int backed_block_split(struct backed_block_list *bbl, struct backed_block *bb,
 		return 0;
 	}
 
-	new_bb = malloc(sizeof(struct backed_block));
+	struct backed_block *new_bb = malloc(sizeof(struct backed_block));
 	if (new_bb == NULL) {
 		return -ENOMEM;
 	}
