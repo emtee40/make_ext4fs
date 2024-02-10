@@ -104,12 +104,10 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		struct selabel_handle *sehnd, int verbose, time_t fixed_time)
 {
 	int entries = 0;
-	struct dentry *dentries;
 	struct dirent **namelist = NULL;
 	struct stat st;
 	int ret;
 	int i;
-	u32 inode;
 	u32 entry_inode;
 	u32 dirs = 0;
 	bool needs_lost_and_found = false;
@@ -131,7 +129,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 			needs_lost_and_found = true;
 	}
 
-	dentries = calloc(entries, sizeof(struct dentry));
+	struct dentry *dentries = calloc(entries, sizeof(struct dentry));
 	if (dentries == NULL && entries)
 		critical_error_errno("malloc");
 
@@ -240,7 +238,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		dirs++;
 	}
 
-	inode = make_directory(dir_inode, entries, dentries, dirs);
+	u32 inode = make_directory(dir_inode, entries, dentries, dirs);
 
 	for (i = 0; i < entries; i++) {
 		if (dentries[i].file_type == EXT4_FT_REG_FILE) {
@@ -364,21 +362,17 @@ int make_ext4fs_sparse_fd(int fd, long long len,
 int make_ext4fs(const char *filename, long long len,
 				const char *mountpoint, struct selabel_handle *sehnd)
 {
-	int fd;
-	int status;
-
 	reset_ext4fs_info();
 	info.len = len;
 
-	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0644);
+	int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0644);
 	if (fd < 0) {
 		error_errno("open");
 		return EXIT_FAILURE;
 	}
 
-	status = make_ext4fs_internal(fd, NULL, mountpoint, NULL, 0, 0, 0, 1, sehnd, 0, -1, NULL);
+	int status = make_ext4fs_internal(fd, NULL, mountpoint, NULL, 0, 0, 0, 1, sehnd, 0, -1, NULL);
 	close(fd);
-
 	return status;
 }
 
@@ -388,10 +382,8 @@ int make_ext4fs(const char *filename, long long len,
 */
 static char *canonicalize_slashes(const char *str, bool absolute)
 {
-	char *ret;
 	int len = strlen(str);
 	int newlen = len;
-	char *ptr;
 
 	if (len == 0) {
 		if (absolute)
@@ -406,12 +398,12 @@ static char *canonicalize_slashes(const char *str, bool absolute)
 	if (str[len - 1] != '/') {
 		newlen++;
 	}
-	ret = malloc(newlen + 1);
+	char *ret = malloc(newlen + 1);
 	if (!ret) {
 		critical_error("malloc");
 	}
 
-	ptr = ret;
+	char *ptr = ret;
 	if (str[0] != '/' && absolute) {
 		*ptr++ = '/';
 	}
@@ -449,10 +441,8 @@ int make_ext4fs_internal(int fd, const char *_directory,
 						 FILE* block_list_file)
 {
 	u32 root_inode_num;
-	u16 root_mode;
 	char *mountpoint;
 	char *directory = NULL;
-	int rc;
 
 	if (setjmp(setjmp_env))
 		return EXIT_FAILURE; /* Handle a call to longjmp() */
@@ -555,7 +545,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	else
 		root_inode_num = build_default_directory_structure(mountpoint, sehnd);
 
-	root_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+	u16 root_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 	inode_set_permissions(root_inode_num, root_mode, 0, 0, 0);
 
 	if (sehnd) {
@@ -604,7 +594,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 		wipe_block_device(fd, info.len);
 	}
 
-	rc = write_ext4_image(fd, gzip, sparse, crc);
+	int rc = write_ext4_image(fd, gzip, sparse, crc);
 
 	sparse_file_destroy(ext4_sparse_file);
 	ext4_sparse_file = NULL;
