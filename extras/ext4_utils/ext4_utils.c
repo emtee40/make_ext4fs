@@ -61,7 +61,7 @@ static int is_power_of(int a, int b)
 	return (a == b) ? 1 : 0;
 }
 
-int bitmap_get_bit(u8 *bitmap, u32 bit)
+int bitmap_get_bit(const u8 *bitmap, u32 bit)
 {
 	if (bitmap[bit / 8] & (1 << (bit % 8)))
 		return 1;
@@ -110,7 +110,7 @@ void read_sb(int fd, struct ext4_super_block *sb)
 }
 
 /* Function to write a primary or backup superblock at a given offset */
-void write_sb(int fd, unsigned long long offset, struct ext4_super_block *sb)
+void write_sb(int fd, unsigned long long offset, const struct ext4_super_block *sb)
 {
 	off64_t ret = lseek64(fd, offset, SEEK_SET);
 	if (ret < 0)
@@ -392,7 +392,6 @@ void ext4_update_free()
 	for (u32 i = 0; i < aux_info.groups; i++) {
 		u32 bg_free_blocks = get_free_blocks(i);
 		u32 bg_free_inodes = get_free_inodes(i);
-		u16 crc;
 
 		aux_info.bg_desc[i].bg_free_blocks_count = bg_free_blocks;
 		aux_info.sb->s_free_blocks_count_lo += bg_free_blocks;
@@ -404,7 +403,7 @@ void ext4_update_free()
 
 		aux_info.bg_desc[i].bg_flags = get_bg_flags(i);
 
-		crc = ext4_crc16(~0, aux_info.sb->s_uuid, sizeof(aux_info.sb->s_uuid));
+		u16 crc = ext4_crc16(~0, aux_info.sb->s_uuid, sizeof(aux_info.sb->s_uuid));
 		crc = ext4_crc16(crc, &i, sizeof(i));
 		crc = ext4_crc16(crc, &aux_info.bg_desc[i], offsetof(struct ext2_group_desc, bg_checksum));
 		aux_info.bg_desc[i].bg_checksum = crc;
