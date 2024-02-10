@@ -39,10 +39,9 @@ static u8 *create_backing(struct block_allocation *alloc,
 	for (; alloc != NULL && backing_len > 0; get_next_region(alloc)) {
 		u32 region_block;
 		u32 region_len;
-		u32 len;
 		get_region(alloc, &region_block, &region_len);
 
-		len = min(region_len * info.block_size, backing_len);
+		u32 len = min(region_len * info.block_size, backing_len);
 
 		sparse_file_add_data(ext4_sparse_file, ptr, len, region_block);
 		ptr += len;
@@ -395,11 +394,10 @@ static struct block_allocation *do_inode_allocate_indirect(
 /* Allocates enough blocks to hold len bytes and connects them to an inode */
 void inode_allocate_indirect(struct ext4_inode *inode, unsigned long len)
 {
-	struct block_allocation *alloc;
 	u32 block_len = DIV_ROUND_UP(len, info.block_size);
 	u32 indirect_len = indirect_blocks_needed(block_len);
 
-	alloc = do_inode_allocate_indirect(block_len);
+	struct block_allocation *alloc = do_inode_allocate_indirect(block_len);
 	if (alloc == NULL) {
 		error("failed to allocate extents for %lu bytes", len);
 		return;
@@ -423,9 +421,6 @@ void inode_attach_resize(struct ext4_inode *inode,
 {
 	u32 block_len = block_allocation_len(alloc);
 	u32 superblocks = block_len / info.bg_desc_reserve_blocks;
-	u32 i, j;
-	u64 blocks;
-	u64 size;
 
 	if (block_len % info.bg_desc_reserve_blocks)
 		critical_error("reserved blocks not a multiple of %d",
@@ -447,14 +442,14 @@ void inode_attach_resize(struct ext4_inode *inode,
 			info.block_size * info.bg_desc_reserve_blocks,
 			get_block(alloc, 0));
 
-	for (i = 0; i < info.bg_desc_reserve_blocks; i++) {
+	for (int i = 0; i < info.bg_desc_reserve_blocks; i++) {
 		int r = (i - aux_info.bg_desc_blocks) % info.bg_desc_reserve_blocks;
 		if (r < 0)
 			r += info.bg_desc_reserve_blocks;
 
 		dind_block_data[i] = get_block(alloc, r);
 
-		for (j = 1; j < superblocks; j++) {
+		for (int j = 1; j < superblocks; j++) {
 			u32 b = j * info.bg_desc_reserve_blocks + r;
 			ind_block_data[r * aux_info.blocks_per_ind + j - 1] = get_block(alloc, b);
 		}
@@ -464,8 +459,8 @@ void inode_attach_resize(struct ext4_inode *inode,
 			aux_info.blocks_per_ind * (info.bg_desc_reserve_blocks - 1) +
 			superblocks - 2;
 
-	blocks = ((u64)block_len + 1) * info.block_size / 512;
-	size = (u64)last_block * info.block_size;
+	u64 blocks = ((u64)block_len + 1) * info.block_size / 512;
+	u64 size = (u64)last_block * info.block_size;
 
 	inode->i_block[EXT4_DIND_BLOCK] = dind_block;
 	inode->i_flags = 0;
@@ -481,11 +476,10 @@ void inode_attach_resize(struct ext4_inode *inode,
 u8 *inode_allocate_data_indirect(struct ext4_inode *inode, unsigned long len,
 		unsigned long backing_len)
 {
-	struct block_allocation *alloc;
 	u32 block_len = DIV_ROUND_UP(len, info.block_size);
 	u8 *data = NULL;
 
-	alloc = do_inode_allocate_indirect(block_len);
+	struct block_allocation *alloc = do_inode_allocate_indirect(block_len);
 	if (alloc == NULL) {
 		error("failed to allocate extents for %lu bytes", len);
 		return NULL;
