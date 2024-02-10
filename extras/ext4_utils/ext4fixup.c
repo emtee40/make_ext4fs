@@ -75,10 +75,8 @@ static int no_write_fixup_state = 0;
 
 static int compute_new_inum(unsigned int old_inum)
 {
-    unsigned int group, offset;
-
-    group = (old_inum - 1) / info.inodes_per_group;
-    offset = (old_inum -1) % info.inodes_per_group;
+    unsigned int group = (old_inum - 1) / info.inodes_per_group;
+    unsigned int offset = (old_inum -1) % info.inodes_per_group;
 
     return (group * new_inodes_per_group) + offset + 1;
 }
@@ -163,7 +161,7 @@ static int set_fs_fixup_state(int fd, int state)
     return 0;
 }
 
-static int read_inode(int fd, unsigned int inum, struct ext4_inode *inode)
+static int read_inode(const int fd, unsigned int inum, struct ext4_inode *inode)
 {
     unsigned int bg_num, bg_offset;
     off64_t inode_offset;
@@ -206,22 +204,20 @@ static int read_block(int fd, unsigned long long block_num, void *block)
     return 0;
 }
 
-static int write_block(int fd, unsigned long long block_num, void *block)
+static int write_block(int fd, unsigned long long block_num, const void *block)
 {
-    off64_t off;
-    unsigned int len;
 
     if (no_write) {
         return 0;
     }
 
-    off = block_num * info.block_size;
+    off64_t off = block_num * info.block_size;
 
     if (lseek64(fd, off, SEEK_SET) < 0) {
         critical_error_errno("failed to seek to block %lld\n", block_num);
     }
 
-    len=write(fd, block, info.block_size);
+    unsigned int len=write(fd, block, info.block_size);
     if (len != info.block_size) {
         critical_error_errno("failed to write block %lld\n", block_num);
     }
@@ -526,7 +522,6 @@ static int recurse_dir(int fd, struct ext4_inode *inode, char *dirbuf, int dirsi
     unsigned int i, leftover_space, is_dir;
     struct ext4_inode tmp_inode;
     int tmp_dirsize;
-    char *tmp_dirbuf;
 
     switch (mode) {
         case SANITY_CHECK_PASS:
@@ -628,7 +623,7 @@ static int recurse_dir(int fd, struct ext4_inode *inode, char *dirbuf, int dirsi
                 printf("dir size = %d bytes\n", tmp_dirsize);
             }
 
-            tmp_dirbuf = malloc(tmp_dirsize);
+            char *tmp_dirbuf = malloc(tmp_dirsize);
             if (tmp_dirbuf == 0) {
                 critical_error("failed to allocate memory for tmp_dirbuf\n");
             }
@@ -682,10 +677,9 @@ int ext4fixup(char *fsdev)
     return ext4fixup_internal(fsdev, 0, 0, 0, 0, 0);
 }
 
-int ext4fixup_internal(char *fsdev, int v_flag, int n_flag,
+int ext4fixup_internal(const char *fsdev, int v_flag, int n_flag,
                        int stop_phase, int stop_loc, int stop_count)
 {
-    int fd;
     struct ext4_inode root_inode;
     unsigned int dirsize;
     char *dirbuf;
@@ -700,7 +694,7 @@ int ext4fixup_internal(char *fsdev, int v_flag, int n_flag,
     bail_loc = stop_loc;
     bail_count = stop_count;
 
-    fd = open(fsdev, O_RDWR);
+    int fd = open(fsdev, O_RDWR);
 
     if (fd < 0)
         critical_error_errno("failed to open filesystem image");

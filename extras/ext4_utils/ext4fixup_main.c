@@ -30,11 +30,9 @@ int main(int argc, char **argv)
     int opt;
     int verbose = 0;
     int no_write = 0;
-    char *fsdev;
-    char *me;
     int stop_phase = 0, stop_loc = 0, stop_count = 0;
 
-    me = basename(argv[0]);
+    char *me = basename(argv[0]);
 
     while ((opt = getopt(argc, argv, "vnd:")) != -1) {
         switch (opt) {
@@ -56,7 +54,7 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    fsdev = argv[optind++];
+    char *fsdev = argv[optind++];
 
     if (optind < argc) {
         fprintf(stderr, "Unexpected argument: %s\n", argv[optind]);

@@ -37,10 +37,9 @@ static u8 *extent_create_backing(struct block_allocation *alloc,
 	for (; alloc != NULL && backing_len > 0; get_next_region(alloc)) {
 		u32 region_block;
 		u32 region_len;
-		u32 len;
 		get_region(alloc, &region_block, &region_len);
 
-		len = min(region_len * info.block_size, backing_len);
+		u32 len = min(region_len * info.block_size, backing_len);
 
 		sparse_file_add_data(ext4_sparse_file, ptr, len, region_block);
 		ptr += len;
@@ -59,10 +58,9 @@ static void extent_create_backing_file(struct block_allocation *alloc,
 	for (; alloc != NULL && backing_len > 0; get_next_region(alloc)) {
 		u32 region_block;
 		u32 region_len;
-		u32 len;
 		get_region(alloc, &region_block, &region_len);
 
-		len = min(region_len * info.block_size, backing_len);
+		u32 len = min(region_len * info.block_size, backing_len);
 
 		sparse_file_add_file(ext4_sparse_file, filename, offset, len,
 				region_block);
@@ -79,7 +77,6 @@ static struct block_allocation *do_inode_allocate_extents(
 	u32 extent_block = 0;
 	u32 file_block = 0;
 	struct ext4_extent *extent;
-	u64 blocks;
 
 	if (alloc == NULL) {
 		error("Failed to allocate %d blocks\n", block_len + 1);
@@ -161,7 +158,7 @@ static struct block_allocation *do_inode_allocate_extents(
 	if (extent_block)
 		block_len += 1;
 
-	blocks = (u64)block_len * info.block_size / 512;
+	u64 blocks = (u64)block_len * info.block_size / 512;
 
 	inode->i_flags |= EXT4_EXTENTS_FL;
 	inode->i_size_lo = len;
@@ -180,10 +177,9 @@ static struct block_allocation *do_inode_allocate_extents(
 u8 *inode_allocate_data_extents(struct ext4_inode *inode, u64 len,
 	u64 backing_len)
 {
-	struct block_allocation *alloc;
 	u8 *data = NULL;
 
-	alloc = do_inode_allocate_extents(inode, len);
+	struct block_allocation *alloc = do_inode_allocate_extents(inode, len);
 	if (alloc == NULL) {
 		error("failed to allocate extents for %"PRIu64" bytes", len);
 		return NULL;
@@ -205,9 +201,7 @@ u8 *inode_allocate_data_extents(struct ext4_inode *inode, u64 len,
 struct block_allocation* inode_allocate_file_extents(struct ext4_inode *inode, u64 len,
 	const char *filename)
 {
-	struct block_allocation *alloc;
-
-	alloc = do_inode_allocate_extents(inode, len);
+	struct block_allocation *alloc = do_inode_allocate_extents(inode, len);
 	if (alloc == NULL) {
 		error("failed to allocate extents for %"PRIu64" bytes", len);
 		return NULL;
@@ -220,9 +214,8 @@ struct block_allocation* inode_allocate_file_extents(struct ext4_inode *inode, u
 /* Allocates enough blocks to hold len bytes and connects them to an inode */
 void inode_allocate_extents(struct ext4_inode *inode, u64 len)
 {
-	struct block_allocation *alloc;
 
-	alloc = do_inode_allocate_extents(inode, len);
+	struct block_allocation *alloc = do_inode_allocate_extents(inode, len);
 	if (alloc == NULL) {
 		error("failed to allocate extents for %"PRIu64" bytes", len);
 		return;
