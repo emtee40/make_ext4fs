@@ -32,7 +32,7 @@ static selabel_initfunc initfuncs[] = {
  * Validation functions
  */
 
-static inline int selabel_is_validate_set(const struct selinux_opt *opts,
+static int selabel_is_validate_set(const struct selinux_opt *opts,
 					  unsigned n)
 {
 	while (n--)
@@ -98,8 +98,7 @@ static struct selabel_lookup_rec *
 selabel_lookup_common(struct selabel_handle *rec,
 		      const char *key, int type)
 {
-	struct selabel_lookup_rec *lr;
-	lr = rec->func_lookup(rec, key, type); 
+	struct selabel_lookup_rec *lr = rec->func_lookup(rec, key, type);
 	if (!lr)
 		return NULL;
 
@@ -109,9 +108,8 @@ selabel_lookup_common(struct selabel_handle *rec,
 int selabel_lookup(struct selabel_handle *rec, char **con,
 		   const char *key, int type)
 {
-	struct selabel_lookup_rec *lr;
 
-	lr = selabel_lookup_common(rec, key, type);
+	struct selabel_lookup_rec *lr = selabel_lookup_common(rec, key, type);
 	if (!lr)
 		return -1;
 
@@ -134,14 +132,13 @@ bool selabel_partial_match(struct selabel_handle *rec, const char *key)
 int selabel_lookup_best_match(struct selabel_handle *rec, char **con,
 			      const char *key, const char **aliases, int type)
 {
-	struct selabel_lookup_rec *lr;
 
 	if (!rec->func_lookup_best_match) {
 		errno = ENOTSUP;
 		return -1;
 	}
 
-	lr = rec->func_lookup_best_match(rec, key, aliases, type);
+	struct selabel_lookup_rec *lr = rec->func_lookup_best_match(rec, key, aliases, type);
 	if (!lr)
 		return -1;
 
