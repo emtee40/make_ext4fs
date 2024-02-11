@@ -28,7 +28,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <selinux/label.h>
 
 #ifdef USE_MINGW
