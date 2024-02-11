@@ -361,7 +361,7 @@ int backed_block_add_fd(struct backed_block_list *bbl, int fd, int64_t offset,
 	return queue_bb(bbl, bb);
 }
 
-int backed_block_split(const struct backed_block_list *bbl, struct backed_block *bb,
+int backed_block_split(struct backed_block_list *bbl, struct backed_block *bb,
 		unsigned int max_len)
 {
 

@@ -275,10 +275,7 @@ int64_t sparse_file_len(struct sparse_file *s, bool sparse, bool crc)
 	return count;
 }
 
-unsigned int sparse_file_block_size(struct sparse_file *s)
-{
-	return s->block_size;
-}
+
 
 static struct backed_block *move_chunks_up_to_len(struct sparse_file *from,
 		struct sparse_file *to, unsigned int len)
