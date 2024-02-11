@@ -50,12 +50,11 @@ static int cmp(const void *A, const void *B)
 static int nodups_specs(struct saved_data *data, const char *path)
 {
 	int rc = 0;
-	unsigned int ii, jj;
 	struct spec *curr_spec, *spec_arr = data->spec_arr;
 
-	for (ii = 0; ii < data->nspec; ii++) {
+	for (unsigned int ii = 0; ii < data->nspec; ii++) {
 		curr_spec = &spec_arr[ii];
-		for (jj = ii + 1; jj < data->nspec; jj++) {
+		for (unsigned int jj = ii + 1; jj < data->nspec; jj++) {
 			if ((!strcmp(spec_arr[jj].property_key, curr_spec->property_key))) {
 				rc = -1;
 				errno = EINVAL;
@@ -84,14 +83,13 @@ static int process_line(struct selabel_handle *rec,
 			const char *path, char *line_buf, 
 			int pass, unsigned lineno)
 {
-	int items, len;
 	char buf1[BUFSIZ], buf2[BUFSIZ];
 	char *buf_p, *prop = buf1, *context = buf2;
 	struct saved_data *data = (struct saved_data *)rec->data;
 	spec_t *spec_arr = data->spec_arr;
 	unsigned int nspec = data->nspec;
 
-	len = strlen(line_buf);
+	int len = strlen(line_buf);
 	if (line_buf[len - 1] == '\n')
 		line_buf[len - 1] = 0;
 	buf_p = line_buf;
@@ -100,7 +98,7 @@ static int process_line(struct selabel_handle *rec,
 	/* Skip comment lines and empty lines. */
 	if (*buf_p == '#' || *buf_p == 0)
 		return 0;
-	items = sscanf(line_buf, "%255s %255s", prop, context);
+	int items = sscanf(line_buf, "%255s %255s", prop, context);
 	if (items != 2) {
 		selinux_log(SELINUX_WARNING,
 			    "%s:  line %d is missing fields, skipping\n", path,
@@ -146,8 +144,7 @@ static int init(struct selabel_handle *rec, const struct selinux_opt *opts,
 	struct saved_data *data = (struct saved_data *)rec->data;
 	const char *path = NULL;
 	FILE *fp;
-	char line_buf[BUFSIZ];
-	unsigned int lineno = 0, maxnspec, pass;
+	unsigned int lineno = 0;
 	int status = -1;
 	struct stat sb;
 
@@ -176,10 +173,10 @@ static int init(struct selabel_handle *rec, const struct selinux_opt *opts,
 	 * size. Second pass is to populate the spec array and check for 
 	 * dups.
 	 */
-	maxnspec = UINT_MAX / sizeof(spec_t);
-	for (pass = 0; pass < 2; pass++) {
+	unsigned int maxnspec = UINT_MAX / sizeof(spec_t);
+	for (unsigned int pass = 0; pass < 2; pass++) {
 		data->nspec = 0;
-
+		char line_buf[BUFSIZ];
 		while (fgets(line_buf, sizeof line_buf - 1, fp)
 		       && data->nspec < maxnspec) {
 			if (process_line(rec, path, line_buf, pass, ++lineno) != 0) {
@@ -225,11 +222,9 @@ finish:
 static void closef(struct selabel_handle *rec)
 {
 	struct saved_data *data = (struct saved_data *)rec->data;
-	struct spec *spec;
-	unsigned int i;
 
-	for (i = 0; i < data->nspec; i++) {
-		spec = &data->spec_arr[i];
+	for (unsigned int i = 0; i < data->nspec; i++) {
+		struct spec * spec = &data->spec_arr[i];
 		free(spec->property_key);
 		free(spec->lr.ctx_raw);
 		free(spec->lr.ctx_trans);
@@ -285,9 +280,8 @@ int selabel_property_init(struct selabel_handle *rec,
 			  const struct selinux_opt *opts,
 			  unsigned nopts)
 {
-	struct saved_data *data;
 
-	data = (struct saved_data *)malloc(sizeof(*data));
+	struct saved_data *data = (struct saved_data *)malloc(sizeof(*data));
 	if (!data)
 		return -1;
 	memset(data, 0, sizeof(*data));
