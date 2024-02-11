@@ -47,10 +47,7 @@ int main(int argc, char *argv[])
 {
 	int in;
 	int out;
-	int ret;
-	struct sparse_file *s;
 	unsigned int block_size = 4096;
-	off64_t len;
 
 	if (argc < 3 || argc > 4) {
 		usage();
@@ -86,17 +83,17 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	len = lseek64(in, 0, SEEK_END);
+	off64_t len = lseek64(in, 0, SEEK_END);
 	lseek64(in, 0, SEEK_SET);
 
-	s = sparse_file_new(block_size, len);
+	struct sparse_file * s = sparse_file_new(block_size, len);
 	if (!s) {
 		fprintf(stderr, "Failed to create sparse file\n");
 		exit(-1);
 	}
 
 	sparse_file_verbose(s);
-	ret = sparse_file_read(s, in, false, false);
+	int ret = sparse_file_read(s, in, false, false);
 	if (ret) {
 		fprintf(stderr, "Failed to read file\n");
 		exit(-1);
