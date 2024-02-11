@@ -382,7 +382,6 @@ const Bytef *end;
 unsigned copy;
 {
     struct inflate_state FAR *state;
-    unsigned dist;
 
     state = (struct inflate_state FAR *)strm->state;
 
@@ -408,7 +407,7 @@ unsigned copy;
         state->whave = state->wsize;
     }
     else {
-        dist = state->wsize - state->wnext;
+        unsigned dist = state->wsize - state->wnext;
         if (dist > copy) dist = copy;
         zmemcpy(state->window + state->wnext, end - copy, dist);
         copy -= dist;
@@ -1294,7 +1293,6 @@ const Bytef *dictionary;
 uInt dictLength;
 {
     struct inflate_state FAR *state;
-    unsigned long dictid;
     int ret;
 
     /* check state */
@@ -1305,7 +1303,7 @@ uInt dictLength;
 
     /* check for correct dictionary identifier */
     if (state->mode == DICT) {
-        dictid = adler32(0L, Z_NULL, 0);
+        unsigned long dictid = adler32(0L, Z_NULL, 0);
         dictid = adler32(dictid, dictionary, dictLength);
         if (dictid != state->check)
             return Z_DATA_ERROR;
@@ -1442,7 +1440,6 @@ z_streamp source;
     struct inflate_state FAR *state;
     struct inflate_state FAR *copy;
     unsigned char FAR *window;
-    unsigned wsize;
 
     /* check input */
     if (dest == Z_NULL || source == Z_NULL || source->state == Z_NULL ||
@@ -1474,7 +1471,7 @@ z_streamp source;
     }
     copy->next = copy->codes + (state->next - state->codes);
     if (window != Z_NULL) {
-        wsize = 1U << state->wbits;
+        unsigned wsize = 1U << state->wbits;
         zmemcpy(window, state->window, wsize);
     }
     copy->window = window;
