@@ -18,8 +18,8 @@
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "ext4fixup.h"
-
+int ext4fixup_internal(char *fsdev, int v_flag, int n_flag,
+                       int stop_phase, int stop_loc, int stop_count);
 static void usage(char *me)
 {
     fprintf(stderr, "%s: usage: %s [-vn] <image or block device>\n", me, me);

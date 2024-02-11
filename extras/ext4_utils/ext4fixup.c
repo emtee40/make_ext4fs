@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+int ext4fixup_internal(char *fsdev, int v_flag, int n_flag,
+                       int stop_phase, int stop_loc, int stop_count);
 #include "ext4_utils.h"
 #include "ext4_extents.h"
-#include "ext4fixup.h"
 #include <sparse/sparse.h>
 #include <sys/types.h>
 #include <sys/stat.h>

@@ -1,4 +1,3 @@
-#include <sys/types.h>
 
 #ifndef _SYSTEM_EXTRAS_EXT4_UTILS_XATTR_H
 #define _SYSTEM_EXTRAS_EXT4_UTILS_XATTR_H 1
