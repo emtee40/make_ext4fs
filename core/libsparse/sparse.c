@@ -134,15 +134,13 @@ static int write_all_blocks(struct sparse_file *s, struct output_file *out)
 	struct backed_block *bb;
 	unsigned int last_block = 0;
 	int64_t pad;
-	int ret = 0;
-
 	for (bb = backed_block_iter_new(s->backed_block_list); bb;
 			bb = backed_block_iter_next(bb)) {
 		if (backed_block_block(bb) > last_block) {
 			unsigned int blocks = backed_block_block(bb) - last_block;
 			write_skip_chunk(out, (int64_t)blocks * s->block_size);
 		}
-		ret = sparse_file_write_block(out, bb);
+		int ret = sparse_file_write_block(out, bb);
 		if (ret)
 			return ret;
 		last_block = backed_block_block(bb) +
