@@ -1,5 +1,4 @@
 #include <unistd.h>
-#include <sys/types.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -7,7 +6,7 @@
 #include <stdio.h>
 #include "selinux_internal.h"
 #include "policy.h"
-#include <limits.h>
+
 
 int security_check_context(const char * con)
 {

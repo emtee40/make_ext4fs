@@ -6,8 +6,6 @@
 #define _SELINUX_CALLBACKS_H_
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <selinux/selinux.h>
 #include "dso.h"
 

@@ -9,7 +9,7 @@
 #include <errno.h>
 #include <selinux/selinux.h>
 #include "callbacks.h"
-
+#include <string.h>
 /* default implementations */
 static int __attribute__ ((format(printf, 2, 3)))
 default_selinux_log(int type __attribute__((unused)), const char *fmt, ...)

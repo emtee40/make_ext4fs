@@ -14,7 +14,6 @@
 #include <regex.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include "callbacks.h"
 #include "label_internal.h"
 
