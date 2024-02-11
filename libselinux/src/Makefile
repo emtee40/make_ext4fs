@@ -1,7 +1,7 @@
 COLIB = ../../core
 EXT4U = ../../extras/ext4_utils
 OBJS = callbacks.o check_context.o \
-	freecon.o init.o label.o label_file.o label_android_property.o
+	init.o label.o label_file.o label_android_property.o
 
 INCLUDE = -I../include -I$(COLIB)/include
 ifeq ($E,.exe)

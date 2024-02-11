@@ -84,7 +84,7 @@ static u32 build_default_directory_structure(const char *dir_path,
 			error("cannot lookup security context for %s", path);
 		} else {
 			inode_set_selinux(inode, secontext);
-			freecon(secontext);
+			free(secontext);
 		}
 		free(path);
 	}
@@ -560,7 +560,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 			}
 			inode_set_selinux(root_inode_num, secontext);
 		}
-		freecon(secontext);
+		free(secontext);
 	}
 
 	ext4_update_free();
