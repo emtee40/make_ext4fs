@@ -28,7 +28,6 @@
 #define XATTR_CAPS_SUFFIX "capability"
 
 #include "ext4_utils.h"
-#include "make_ext4fs.h"
 #include "allocate.h"
 #include "contents.h"
 #include "extent.h"
@@ -47,10 +46,8 @@ struct block_allocation* get_saved_allocation_chain() {
 static u32 dentry_size(u32 entries, struct dentry *dentries)
 {
 	u32 len = 24;
-	unsigned int dentry_len;
-
 	for (unsigned int i = 0; i < entries; i++) {
-		dentry_len = 8 + EXT4_ALIGN(strlen(dentries[i].filename), 4);
+		unsigned int dentry_len = 8 + EXT4_ALIGN(strlen(dentries[i].filename), 4);
 		if (len % info.block_size + dentry_len > info.block_size)
 			len += info.block_size - (len % info.block_size);
 		len += dentry_len;
@@ -65,7 +62,6 @@ static struct ext4_dir_entry_2 *add_dentry(u8 *data, u32 *offset,
 {
 	u8 name_len = strlen(name);
 	u16 rec_len = 8 + EXT4_ALIGN(name_len, 4);
-	struct ext4_dir_entry_2 *dentry;
 
 	u32 start_block = *offset / info.block_size;
 	u32 end_block = (*offset + rec_len - 1) / info.block_size;
@@ -78,7 +74,7 @@ static struct ext4_dir_entry_2 *add_dentry(u8 *data, u32 *offset,
 		*offset = end_block * info.block_size;
 	}
 
-	dentry = (struct ext4_dir_entry_2 *)(data + *offset);
+	struct ext4_dir_entry_2 * dentry = (struct ext4_dir_entry_2 *)(data + *offset);
 	dentry->inode = inode;
 	dentry->rec_len = rec_len;
 	dentry->name_len = name_len;
@@ -98,17 +94,11 @@ static struct ext4_dir_entry_2 *add_dentry(u8 *data, u32 *offset,
 u32 make_directory(u32 dir_inode_num, u32 entries, struct dentry *dentries,
 	u32 dirs)
 {
-	struct ext4_inode *inode;
-	u32 blocks;
-	u32 len;
 	u32 offset = 0;
 	u32 inode_num;
-	u8 *data;
-	unsigned int i;
-	struct ext4_dir_entry_2 *dentry;
 
-	blocks = DIV_ROUND_UP(dentry_size(entries, dentries), info.block_size);
-	len = blocks * info.block_size;
+	u32 blocks = DIV_ROUND_UP(dentry_size(entries, dentries), info.block_size);
+	u32 len = blocks * info.block_size;
 
 	if (dir_inode_num) {
 		inode_num = allocate_inode(info);
@@ -124,13 +114,13 @@ u32 make_directory(u32 dir_inode_num, u32 entries, struct dentry *dentries,
 
 	add_directory(inode_num);
 
-	inode = get_inode(inode_num);
+	struct ext4_inode *inode = get_inode(inode_num);
 	if (inode == NULL) {
 		error("failed to get inode %u", inode_num);
 		return EXT4_ALLOCATE_FAILED;
 	}
 
-	data = inode_allocate_data_extents(inode, len, len);
+	u8 *data = inode_allocate_data_extents(inode, len, len);
 	if (data == NULL) {
 		error("failed to allocate %u extents", len);
 		return EXT4_ALLOCATE_FAILED;
@@ -140,7 +130,7 @@ u32 make_directory(u32 dir_inode_num, u32 entries, struct dentry *dentries,
 	inode->i_links_count = dirs + 2;
 	inode->i_flags |= aux_info.default_i_flags;
 
-	dentry = NULL;
+	struct ext4_dir_entry_2 *dentry = NULL;
 
 	dentry = add_dentry(data, &offset, NULL, inode_num, ".", EXT4_FT_DIR);
 	if (!dentry) {
@@ -154,7 +144,7 @@ u32 make_directory(u32 dir_inode_num, u32 entries, struct dentry *dentries,
 		return EXT4_ALLOCATE_FAILED;
 	}
 
-	for (i = 0; i < entries; i++) {
+	for (unsigned int i = 0; i < entries; i++) {
 		dentry = add_dentry(data, &offset, dentry, 0,
 				dentries[i].filename, dentries[i].file_type);
 		if (offset > len || (offset == len && i != entries - 1))
@@ -176,16 +166,14 @@ u32 make_directory(u32 dir_inode_num, u32 entries, struct dentry *dentries,
 /* Creates a file on disk.  Returns the inode number of the new file */
 u32 make_file(const char *filename, u64 len)
 {
-	struct ext4_inode *inode;
-	u32 inode_num;
 
-	inode_num = allocate_inode(info);
+	u32 inode_num = allocate_inode(info);
 	if (inode_num == EXT4_ALLOCATE_FAILED) {
 		error("failed to allocate inode\n");
 		return EXT4_ALLOCATE_FAILED;
 	}
 
-	inode = get_inode(inode_num);
+	struct ext4_inode * inode = get_inode(inode_num);
 	if (inode == NULL) {
 		error("failed to get inode %u", inode_num);
 		return EXT4_ALLOCATE_FAILED;
@@ -210,17 +198,14 @@ u32 make_file(const char *filename, u64 len)
 /* Creates a file on disk.  Returns the inode number of the new file */
 u32 make_link(const char *link)
 {
-	struct ext4_inode *inode;
-	u32 inode_num;
 	u32 len = strlen(link);
-
-	inode_num = allocate_inode(info);
+	u32 inode_num = allocate_inode(info);
 	if (inode_num == EXT4_ALLOCATE_FAILED) {
 		error("failed to allocate inode\n");
 		return EXT4_ALLOCATE_FAILED;
 	}
 
-	inode = get_inode(inode_num);
+	struct ext4_inode * inode = get_inode(inode_num);
 	if (inode == NULL) {
 		error("failed to get inode %u", inode_num);
 		return EXT4_ALLOCATE_FAILED;
@@ -272,7 +257,7 @@ static size_t xattr_free_space(struct ext4_xattr_entry *entry, char *end)
 		entry  = EXT4_XATTR_NEXT(entry);
 	}
 
-	if (((char *) entry) > end) {
+	if ((char *) entry > end) {
 		error("unexpected read beyond end of xattr space");
 		return 0;
 	}
