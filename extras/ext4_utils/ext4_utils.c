@@ -61,7 +61,7 @@ static int is_power_of(int a, int b)
 	return (a == b) ? 1 : 0;
 }
 
-int bitmap_get_bit(const u8 *bitmap, u32 bit)
+int bitmap_get_bit(u8 *bitmap, u32 bit)
 {
 	if (bitmap[bit / 8] & (1 << (bit % 8)))
 		return 1;
@@ -110,7 +110,7 @@ void read_sb(int fd, struct ext4_super_block *sb)
 }
 
 /* Function to write a primary or backup superblock at a given offset */
-void write_sb(int fd, unsigned long long offset, const struct ext4_super_block *sb)
+void write_sb(int fd, unsigned long long offset,struct ext4_super_block *sb)
 {
 	off64_t ret = lseek64(fd, offset, SEEK_SET);
 	if (ret < 0)

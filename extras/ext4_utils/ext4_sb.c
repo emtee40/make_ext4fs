@@ -18,7 +18,7 @@
 
 #include "ext4_sb.h"
 
-int ext4_parse_sb(const struct ext4_super_block *sb, struct fs_info *info)
+int ext4_parse_sb(struct ext4_super_block *sb, struct fs_info *info)
 {
 
         if (sb->s_magic != EXT4_SUPER_MAGIC)
