@@ -24,7 +24,6 @@
 
 #include <string.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <stdint.h>
 
 #ifdef HAVE_ANDROID_OS
@@ -463,18 +462,16 @@ static const struct fs_path_config android_files[] = {
     /* clang-format on */
 };
 
-static inline void fs_config(const char *path, int dir,
+static void fs_config(const char *path, int dir,
                              unsigned *uid, unsigned *gid, unsigned *mode, uint64_t *capabilities)
 {
-    const struct fs_path_config *pc;
-    int plen;
 
     if (path[0] == '/') {
         path++;
     }
 
-    pc = dir ? android_dirs : android_files;
-    plen = strlen(path);
+    const struct fs_path_config * pc = dir ? android_dirs : android_files;
+    int plen = strlen(path);
     for(; pc->prefix; pc++){
         int len = strlen(pc->prefix);
         if (dir) {

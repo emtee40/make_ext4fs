@@ -21,10 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -38,7 +36,6 @@ void usage()
 int main(int argc, char *argv[])
 {
 	int in;
-	struct sparse_file *s;
 
 	if (argc < 3) {
 		usage();
@@ -62,7 +59,7 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		s = sparse_file_import(in, true, false);
+		struct sparse_file * s = sparse_file_import(in, true, false);
 		if (!s) {
 			fprintf(stderr, "Failed to read sparse file\n");
 			exit(-1);

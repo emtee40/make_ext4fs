@@ -25,8 +25,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+
 
 #include <sparse/sparse.h>
 
@@ -41,14 +40,6 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-	int in;
-	int out;
-	int i;
-	int ret;
-	struct sparse_file *s;
-	int64_t max_size;
-	struct sparse_file **out_s;
-	int files;
 	char filename[4096];
 
 	if (argc != 4) {
@@ -56,27 +47,27 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	max_size = atoll(argv[3]);
+	int64_t max_size = atoll(argv[3]);
 
-	in = open(argv[1], O_RDONLY | O_BINARY);
+	int in = open(argv[1], O_RDONLY | O_BINARY);
 	if (in < 0) {
 		fprintf(stderr, "Cannot open input file %s\n", argv[1]);
 		exit(-1);
 	}
 
-	s = sparse_file_import(in, true, false);
+	struct sparse_file *s = sparse_file_import(in, true, false);
 	if (!s) {
 		fprintf(stderr, "Failed to import sparse file\n");
 		exit(-1);
 	}
 
-	files = sparse_file_resparse(s, max_size, NULL, 0);
+	int files = sparse_file_resparse(s, max_size, NULL, 0);
 	if (files < 0) {
 		fprintf(stderr, "Failed to resparse\n");
 		exit(-1);
 	}
 
-	out_s = calloc(sizeof(struct sparse_file *), files);
+	struct sparse_file **out_s = calloc(sizeof(struct sparse_file *), files);
 	if (!out_s) {
 		fprintf(stderr, "Failed to allocate sparse file array\n");
 		exit(-1);
@@ -88,14 +79,14 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	for (i = 0; i < files; i++) {
-		ret = snprintf(filename, sizeof(filename), "%s.%d", argv[2], i);
+	for (int i = 0; i < files; i++) {
+		int ret = snprintf(filename, sizeof(filename), "%s.%d", argv[2], i);
 		if (ret >= (int)sizeof(filename)) {
 			fprintf(stderr, "Filename too long\n");
 			exit(-1);
 		}
 
-		out = open(filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0664);
+		int out = open(filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0664);
 		if (out < 0) {
 			fprintf(stderr, "Cannot open output file %s\n", argv[2]);
 			exit(-1);

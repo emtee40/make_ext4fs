@@ -21,7 +21,6 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -372,7 +371,6 @@ static int write_sparse_fill_chunk(struct output_file *out, unsigned int len,
 {
 	chunk_header_t chunk_header;
 	int rnd_up_len, count;
-	int ret;
 
 	/* Round up the fill length to a multiple of the block size */
 	rnd_up_len = ALIGN(len, out->block_size);
@@ -382,7 +380,7 @@ static int write_sparse_fill_chunk(struct output_file *out, unsigned int len,
 	chunk_header.reserved1 = 0;
 	chunk_header.chunk_sz = rnd_up_len / out->block_size;
 	chunk_header.total_sz = CHUNK_HEADER_LEN + sizeof(fill_val);
-	ret = out->ops->write(out, &chunk_header, sizeof(chunk_header));
+	int ret = out->ops->write(out, &chunk_header, sizeof(chunk_header));
 
 	if (ret < 0)
 		return -1;
