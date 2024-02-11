@@ -68,12 +68,11 @@ struct saved_data {
 static int get_stem_from_spec(const char *const buf)
 {
 	const char *tmp = strchr(buf + 1, '/');
-	const char *ind;
 
 	if (!tmp)
 		return 0;
 
-	for (ind = buf; ind < tmp; ind++) {
+	for (const char *ind = buf; ind < tmp; ind++) {
 		if (strchr(".^$?*+|[({", (int)*ind))
 			return 0;
 	}
@@ -255,8 +254,7 @@ static int compile_regex(struct saved_data *data, spec_t *spec, char **errbuf)
 	regerr = regcomp(&spec->regex, anchored_regex, 
 			 REG_EXTENDED | REG_NOSUB);
 	if (regerr != 0) {
-		size_t errsz = 0;
-		errsz = regerror(regerr, &spec->regex, NULL, 0);
+		size_t errsz = regerror(regerr, &spec->regex, NULL, 0);
 		if (errsz && errbuf)
 			*errbuf = (char *) malloc(errsz);
 		if (errbuf && *errbuf)
@@ -282,7 +280,7 @@ static int process_line(struct selabel_handle *rec,
 	int items, len;
 	char buf1[BUFSIZ], buf2[BUFSIZ], buf3[BUFSIZ];
 	char *buf_p, *regex = buf1, *type = buf2, *context = buf3;
-	struct saved_data *data = (struct saved_data *)rec->data;
+	struct saved_data *data = rec->data;
 	spec_t *spec_arr = data->spec_arr;
 	unsigned int nspec = data->nspec;
 
@@ -398,7 +396,7 @@ static int process_line(struct selabel_handle *rec,
 static int init(struct selabel_handle *rec, const struct selinux_opt *opts,
 		unsigned n)
 {
-	struct saved_data *data = (struct saved_data *)rec->data;
+	struct saved_data *data = rec->data;
 	const char *path = NULL;
 	const char *prefix = NULL;
 	FILE *fp;
@@ -541,7 +539,7 @@ finish:
  */
 static void closef(struct selabel_handle *rec)
 {
-	struct saved_data *data = (struct saved_data *)rec->data;
+	struct saved_data *data = rec->data;
 	struct spec *spec;
 	struct stem *stem;
 	unsigned int i;
@@ -577,7 +575,7 @@ static spec_t *lookup_common(struct selabel_handle *rec,
 	struct saved_data *data = (struct saved_data *)rec->data;
 	spec_t *spec_arr = data->spec_arr;
 	int i, rc, file_stem;
-	mode_t mode = (mode_t)type;
+	mode_t mode = type;
 	const char *buf;
 	spec_t *ret = NULL;
 	char *clean_key = NULL;
@@ -749,7 +747,7 @@ out:
 
 static void stats(struct selabel_handle *rec)
 {
-	struct saved_data *data = (struct saved_data *)rec->data;
+	struct saved_data *data = rec->data;
 	unsigned int i, nspec = data->nspec;
 	spec_t *spec_arr = data->spec_arr;
 
