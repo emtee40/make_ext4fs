@@ -2,8 +2,7 @@
 #define _SELINUX_ANDROID_H_
 
 #include <stdbool.h>
-#include <sys/types.h>
-#include <unistd.h>
+
 
 #include <selinux/label.h>
 

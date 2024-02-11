@@ -7,7 +7,6 @@
 #define _SELABEL_H_
 
 #include <stdbool.h>
-#include <sys/types.h>
 #include <selinux/selinux.h>
 
 #ifdef __cplusplus
