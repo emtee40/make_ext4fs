@@ -33,21 +33,15 @@ int __attribute__ ((format(printf, 2, 3)))
 (*selinux_log)(int, const char *, ...) =
 	default_selinux_log;
 
-int
-(*selinux_audit) (void *, security_class_t, char *, size_t) =
-	0;
+int (*selinux_audit) (void *, security_class_t, char *, size_t) = 0;
 
 int
 (*selinux_validate)(char **ctx) =
 	default_selinux_validate;
 
-int
-(*selinux_netlink_setenforce) (int enforcing) =
-	0;
+int (*selinux_netlink_setenforce) (int enforcing) = 0;
 
-int
-(*selinux_netlink_policyload) (int seqno) =
-	0;
+int (*selinux_netlink_policyload) (int seqno) = 0;
 
 /* callback setting function */
 void
