@@ -10,6 +10,7 @@
 #include <selinux/selinux.h>
 #include "callbacks.h"
 #include <string.h>
+
 /* default implementations */
 static int __attribute__ ((format(printf, 2, 3)))
 default_selinux_log(int type __attribute__((unused)), const char *fmt, ...)
@@ -22,30 +23,9 @@ default_selinux_log(int type __attribute__((unused)), const char *fmt, ...)
 }
 
 static int
-default_selinux_audit(void *ptr __attribute__((unused)),
-		      security_class_t cls __attribute__((unused)),
-		      char *buf __attribute__((unused)),
-		      size_t len __attribute__((unused)))
-{
-	return 0;
-}
-
-static int
 default_selinux_validate(char **ctx)
 {
 	return security_check_context(*ctx);
-}
-
-static int
-default_selinux_setenforce(int enforcing __attribute__((unused)))
-{
-	return 0;
-}
-
-static int
-default_selinux_policyload(int seqno __attribute__((unused)))
-{
-	return 0;
 }
 
 /* callback pointers */
@@ -55,7 +35,7 @@ int __attribute__ ((format(printf, 2, 3)))
 
 int
 (*selinux_audit) (void *, security_class_t, char *, size_t) =
-	default_selinux_audit;
+	0;
 
 int
 (*selinux_validate)(char **ctx) =
@@ -63,11 +43,11 @@ int
 
 int
 (*selinux_netlink_setenforce) (int enforcing) =
-	default_selinux_setenforce;
+	0;
 
 int
 (*selinux_netlink_policyload) (int seqno) =
-	default_selinux_policyload;
+	0;
 
 /* callback setting function */
 void
