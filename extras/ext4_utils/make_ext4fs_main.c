@@ -35,7 +35,6 @@
 #include <selinux/label.h>
 #include <selinux/android.h>
 
-#include "make_ext4fs.h"
 #include "ext4_utils.h"
 #include "canned_fs_config.h"
 

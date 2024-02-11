@@ -12,7 +12,6 @@
 #ifndef _EXT4_H
 #define _EXT4_H
 
-#include <sys/types.h>
 
 #undef EXT4FS_DEBUG
 
