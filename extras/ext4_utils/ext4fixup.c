@@ -677,7 +677,7 @@ int ext4fixup(char *fsdev)
     return ext4fixup_internal(fsdev, 0, 0, 0, 0, 0);
 }
 
-int ext4fixup_internal(const char *fsdev, int v_flag, int n_flag,
+int ext4fixup_internal(char *fsdev, int v_flag, int n_flag,
                        int stop_phase, int stop_loc, int stop_count)
 {
     struct ext4_inode root_inode;
