@@ -26,7 +26,6 @@
 #include <inttypes.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <stddef.h>
 #include <string.h>
 
 #ifdef USE_MINGW

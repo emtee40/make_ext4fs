@@ -21,7 +21,6 @@ typedef unsigned int u_int;
 #define __BEGIN_DECLS
 #define __END_DECLS
 #else
-#include <sys/cdefs.h>
 #endif
 
 #define SHA1_DIGEST_LENGTH		20

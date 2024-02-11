@@ -18,26 +18,19 @@
 #include "ext4_utils.h"
 #include "allocate.h"
 #include "contents.h"
-#include "uuid.h"
 #include "wipe.h"
-
 #include <sparse/sparse.h>
-
 #include <assert.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#include <selinux/selinux.h>
 #include <selinux/label.h>
-#include <selinux/android.h>
 
 #ifdef USE_MINGW
 #include "windows_supp.h"
